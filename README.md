@@ -43,6 +43,25 @@ This project is a web-based analytics dashboard designed to provide insights int
 *   **Chart.js:** A flexible JavaScript charting library for creating various types of data visualizations.
 *   **Git:** Version control system.
 
+## Screenshots
+
+Here are some screenshots illustrating the various sections and functionalities of the dashboard:
+
+### Login Page
+![Login Page](Screenshot5.jpg)
+
+### Accounts Management
+![Accounts Management](Screenshot1.jpg)
+
+### Records Management
+![Records Management](Screenshot3.jpg)
+
+### Data Entry
+![Data Entry](Screenshot4.jpg)
+
+### Government Planning Insights & Analytics
+![Government Planning Insights & Analytics](Screenshot2.jpg)
+
 ## Setup and Installation
 
 To get a local copy up and running, follow these simple steps.
