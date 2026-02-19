@@ -1,0 +1,2767 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Barangay Population Data Management</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <div class="page container-xxl">
+      <header class="hero">
+        <div>
+          <h1>Barangay San Isidro Population Data</h1>
+          <p>Kevin Christopher Gallego</p>
+        </div>
+        <div>
+          <button type="button" class="ghost" id="logoutButton">Logout</button>
+        </div>
+      </header>
+
+      <main class="layout row g-4">
+        <section class="panel col-12" id="accountsSection" style="display: none;">
+          <div class="panel-header">
+            <h2>Accounts</h2>
+            <span class="muted">Manage admin and officer users</span>
+          </div>
+          <form id="accountForm" class="form">
+            <div class="form-grid" id="accountFormFields"></div>
+            <div class="form-actions">
+              <button type="submit" class="primary" id="accountSaveButton">
+                Add Account
+              </button>
+              <button type="button" class="ghost" id="accountResetButton">
+                Reset
+              </button>
+            </div>
+          </form>
+          <div class="table-controls d-flex justify-content-between align-items-end flex-wrap gap-3">
+            <div class="d-flex flex-wrap gap-3 align-items-end">
+              <div class="control-group">
+                <label for="accountSearchColumn">Search Column</label>
+                <select id="accountSearchColumn"></select>
+              </div>
+              <div class="control-group" id="accountSearchInputGroup">
+                <label for="accountSearchInput">Search</label>
+                <input
+                  type="text"
+                  id="accountSearchInput"
+                  placeholder="Type to search"
+                />
+              </div>
+              <div class="control-group" id="accountSearchSelectGroup">
+                <label for="accountSearchSelect">Select</label>
+                <select id="accountSearchSelect"></select>
+              </div>
+              <div class="control-group">
+                <label>Search</label>
+                <div class="d-flex gap-2">
+                  <button type="button" class="primary" id="accountSearchButton">
+                    Search
+                  </button>
+                  <button type="button" class="ghost" id="accountClearButton">
+                    Clear
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="d-flex flex-wrap gap-3 align-items-end">
+              <div class="control-group">
+                <label for="accountSortColumn">Sort By</label>
+                <select id="accountSortColumn"></select>
+              </div>
+              <div class="control-group">
+                <label for="accountSortOrder" id="accountSortOrderLabel">Order</label>
+                <select id="accountSortOrder">
+                  <option value="asc">Ascending</option>
+                  <option value="desc">Descending</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="table-wrap table-responsive">
+            <table id="accountsTable" class="table table-sm align-middle">
+              <thead id="accountsTableHead"></thead>
+              <tbody id="accountsTableBody"></tbody>
+            </table>
+          </div>
+          <div class="pagination-controls">
+            <button type="button" class="ghost" id="accountPrevPage">Previous</button>
+            <span id="accountPageInfo">Page 1</span>
+            <button type="button" class="ghost" id="accountNextPage">Next</button>
+          </div>
+          <div class="mt-4">
+            <h3>Activity Log</h3>
+            <div class="table-wrap table-responsive">
+              <table id="activityTable" class="table table-sm align-middle">
+                <thead>
+                  <tr>
+                    <th>Activity Time</th>
+                    <th>Affected ID</th>
+                    <th>Actor ID</th>
+                    <th>Actor Type</th>
+                    <th>Activity</th>
+                  </tr>
+                </thead>
+                <tbody id="activityTableBody"></tbody>
+              </table>
+            </div>
+            <div class="pagination-controls mt-3">
+              <button type="button" class="ghost" id="activityPrevPage">Previous</button>
+              <span id="activityPageInfo">Page 1</span>
+              <button type="button" class="ghost" id="activityNextPage">Next</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Government Planning Insights Section -->
+        <section class="panel col-12" id="governmentAnalytics">
+          <div class="panel-header d-flex justify-content-between align-items-center">
+            <h2>Government Planning Insights</h2>
+            <div class="government-chart-selector">
+              <select id="governmentChartSelect" class="form-select form-select-lg">
+                <option value="dependency">Dependency Ratio</option>
+                <option value="vulnerability">Vulnerability Overlap</option>
+                <option value="mismatch">Education-Income Mismatch</option>
+                <option value="density">Household Density</option>
+                <option value="voterGap">Voter Registration Gap</option>
+              </select>
+            </div>
+          </div>
+          <div class="government-metrics-grid row g-3">
+            <!-- Dependency Ratio Card -->
+            <div class="government-metric-card col-12 col-lg-6 government-chart-card" data-chart="dependency">
+              <div class="metric-card-header">
+                <h4>Dependency Ratio</h4>
+                <span class="metric-card-value" id="dependencyRatioValue">0%</span>
+              </div>
+              <div class="metric-card-chart">
+                <canvas id="dependencyRatioChart"></canvas>
+              </div>
+              <div class="metric-card-summary" id="dependencyRatioSummary">
+                <div class="metric-insight">
+                  <p id="dependencyRatioInsight">Calculating dependency ratio...</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Vulnerability Overlap Card -->
+            <div class="government-metric-card col-12 col-lg-6 government-chart-card" data-chart="vulnerability">
+              <div class="metric-card-header">
+                <h4>Highest Priority Households</h4>
+                <span class="metric-card-value" id="vulnerabilityValue">0</span>
+              </div>
+              <div class="metric-card-chart">
+                <canvas id="vulnerabilityChart"></canvas>
+              </div>
+              <div class="metric-card-summary" id="vulnerabilitySummary">
+                <div class="metric-insight">
+                  <p id="vulnerabilityInsight">Identifying vulnerable households...</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Education-to-Income Mismatch Card -->
+            <div class="government-metric-card col-12 col-lg-6 government-chart-card" data-chart="mismatch">
+              <div class="metric-card-header">
+                <h4>Education-Income Mismatch</h4>
+                <span class="metric-card-value" id="mismatchValue">0</span>
+              </div>
+              <div class="metric-card-chart">
+                <canvas id="mismatchChart"></canvas>
+              </div>
+              <div class="metric-card-summary" id="mismatchSummary">
+                <div class="metric-insight">
+                  <p id="mismatchInsight">Analyzing education-income alignment...</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Household Density Card -->
+            <div class="government-metric-card col-12 col-lg-6 government-chart-card" data-chart="density">
+              <div class="metric-card-header">
+                <h4>Household Density</h4>
+                <span class="metric-card-value" id="densityValue">0</span>
+              </div>
+              <div class="metric-card-chart">
+                <canvas id="densityChart"></canvas>
+              </div>
+              <div class="metric-card-summary" id="densitySummary">
+                <div class="metric-insight">
+                  <p id="densityInsight">Calculating household density...</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Voter Readiness Gap Card -->
+            <div class="government-metric-card col-12 col-lg-12 government-chart-card" data-chart="voterGap">
+              <div class="metric-card-header">
+                <h4>Voter Registration Gap</h4>
+                <span class="metric-card-value" id="voterGapValue">0%</span>
+              </div>
+              <div class="metric-card-chart">
+                <canvas id="voterGapChart"></canvas>
+              </div>
+              <div class="metric-card-summary" id="voterGapSummary">
+                <div class="metric-insight">
+                  <p id="voterGapInsight">Analyzing voter registration status...</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel col-12" data-section="census">
+          <div class="panel-header">
+            <h2>Analytics</h2>
+          </div>
+          <div class="table-controls row g-3">
+            <div class="col-12">
+              <div class="analytics-stats d-flex justify-content-start gap-4 mb-3">
+                <div class="stat">
+                  <span class="stat-label">Total Records</span>
+                  <span class="stat-value" id="analyticsTotalCount">0</span>
+                </div>
+                <div class="stat">
+                  <span class="stat-label">Active Records</span>
+                  <span class="stat-value text-success" id="analyticsActiveCount">0</span>
+                </div>
+                <div class="stat">
+                  <span class="stat-label">Disabled Records</span>
+                  <span class="stat-value text-danger" id="analyticsDisabledCount">0</span>
+                </div>
+              </div>
+            </div>
+            <div class="control-group col-12 col-md-4 col-lg-3">
+              <label for="analyticsScope">Data Scope</label>
+              <select id="analyticsScope">
+                <option value="all">Whole Database</option>
+                <option value="page">Current Page (25)</option>
+                <option value="filtered">Filtered Results (All Pages)</option>
+              </select>
+            </div>
+          </div>
+          <div class="charts row g-3">
+            <div class="chart-card col-12 col-lg-6">
+              <div class="chart-controls">
+                <div class="control-group flex-fill">
+                  <label for="textMetric">Text Metric</label>
+                  <select id="textMetric"></select>
+                </div>
+                <div class="control-group flex-fill">
+                  <label for="textChartType">Chart Type</label>
+                  <select id="textChartType">
+                    <option value="pie">Pie</option>
+                    <option value="bar">Bar</option>
+                  </select>
+                </div>
+              </div>
+              <canvas id="textChart"></canvas>
+              <div id="textMetricSummary" class="mt-2 small"></div>
+            </div>
+            <div class="chart-card col-12 col-lg-6">
+              <div class="chart-controls">
+                <div class="control-group flex-fill">
+                  <label for="numberMetric">Number Metric</label>
+                  <select id="numberMetric"></select>
+                </div>
+                <div class="control-group flex-fill">
+                  <label for="numberChartType">Chart Type</label>
+                  <select id="numberChartType">
+                    <option value="line">Line</option>
+                    <option value="bar">Bar</option>
+                  </select>
+                </div>
+              </div>
+              <canvas id="numberChart"></canvas>
+              <div id="numberMetricSummary" class="mt-2 small"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel col-12" data-section="census">
+          <div class="panel-header">
+            <h2>Records</h2>
+            <span class="muted">Search, sort, edit, and disable data</span>
+          </div>
+          <div class="table-controls d-flex justify-content-between align-items-end flex-wrap gap-3">
+            <div class="d-flex flex-wrap gap-3 align-items-end">
+              <div class="control-group">
+                <label for="searchColumn">Search Column</label>
+                <select id="searchColumn"></select>
+              </div>
+              <div class="control-group" id="searchInputGroup">
+                <label for="searchInput">Search</label>
+                <input type="text" id="searchInput" placeholder="Type to search" />
+              </div>
+              <div class="control-group" id="searchSelectGroup">
+                <label for="searchSelect">Select</label>
+                <select id="searchSelect"></select>
+              </div>
+              <div class="control-group" id="searchRangeGroup">
+                <label for="searchRange">Range</label>
+                <select id="searchRange"></select>
+              </div>
+              <div class="control-group">
+                <label>Search</label>
+                <div class="d-flex gap-2">
+                  <button type="button" class="primary" id="searchButton">
+                    Search
+                  </button>
+                  <button type="button" class="ghost" id="clearButton">
+                    Clear
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="d-flex flex-wrap gap-3 align-items-end">
+              <div class="control-group">
+                <label for="sortColumn">Sort By</label>
+                <select id="sortColumn"></select>
+              </div>
+              <div class="control-group">
+                <label for="sortOrder" id="sortOrderLabel">Order</label>
+                <select id="sortOrder">
+                  <option value="asc">Ascending</option>
+                  <option value="desc">Descending</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="table-wrap table-responsive">
+            <table id="recordsTable" class="table table-sm align-middle">
+              <thead id="tableHead"></thead>
+              <tbody id="tableBody"></tbody>
+            </table>
+          </div>
+          <div class="pagination-controls">
+            <button type="button" class="ghost" id="prevPage">Previous</button>
+            <span id="pageInfo">Page 1</span>
+            <button type="button" class="ghost" id="nextPage">Next</button>
+          </div>
+        </section>
+
+        <section class="panel col-12" data-section="census">
+          <div class="panel-header">
+            <h2 id="dataFormTitle">Data Entry</h2>
+            <span id="formModeLabel">Add New Record</span>
+          </div>
+          <form id="recordForm" class="form">
+            <div class="form-grid" id="formFields"></div>
+            <div class="form-actions">
+              <button type="submit" class="primary" id="saveButton">Add Record</button>
+              <button type="button" class="ghost" id="resetButton">Reset</button>
+            </div>
+          </form>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      const columns = [
+        { key: "ID", label: "ID", inputType: "number", editable: false },
+        { key: "LastName", label: "Last Name", inputType: "text" },
+        { key: "FirstName", label: "First Name", inputType: "text" },
+        { key: "MiddleName", label: "Middle Name", inputType: "text" },
+        { key: "Age", label: "Age", inputType: "number" },
+        { key: "Sex", label: "Sex", inputType: "select", options: ["M", "F"] },
+        { key: "DateOfBirth", label: "Date of Birth", inputType: "date" },
+        { key: "CivilStatus", label: "Civil Status", inputType: "select", options: ["Single","Married","Widowed","Separated","Annulled","Others"] },
+        { key: "HouseNo", label: "House No.", inputType: "text" },
+        { key: "StreetPurok", label: "Street / Purok", inputType: "text" },
+        { key: "BarangayAddress", label: "Barangay Address", inputType: "text", editable: false },
+        { key: "RoleInHH", label: "Role in HH", inputType: "select", options: ["Household Head","Spouse","Son","Daughter","Son-in-law","Daughter-in-law","Grandson","Granddaughter","Father","Mother","Brother","Sister","Nephew","Niece","Uncle","Aunt","Cousin","Boarder","Others"] },
+        { key: "Education", label: "Education", inputType: "select", options: ["None","Elementary","High School","Senior High","Vocational","College","Post-Graduate","Others"] },
+        { key: "Occupation", label: "Occupation", inputType: "select", options: ["None","Student","Housewife","Driver","Farmer","Fisherman","Vendor","Laborer","Carpenter","Mason","Factory Worker","Office Worker","Teacher","Nurse","Engineer","Salesperson","Business Owner","Self-Employed","Retired","Others"] },
+        { key: "IPStatus", label: "IP Status", inputType: "select", options: ["Yes","No"] },
+        { key: "PWD", label: "PWD", inputType: "select", options: ["Yes","No"] },
+        { key: "Beneficiary4Ps", label: "4Ps Beneficiary", inputType: "select", options: ["Yes","No"] },
+        { key: "RegisteredVoter", label: "Registered Voter", inputType: "select", options: ["Yes","No"] },
+        { key: "MonthlyIncome", label: "Monthly Income", inputType: "number" },
+      ];
+
+      const numericRanges = {
+        Age: [
+          { label: "0-17", min: 0, max: 17 },
+          { label: "18-30", min: 18, max: 30 },
+          { label: "31-45", min: 31, max: 45 },
+          { label: "46-60", min: 46, max: 60 },
+          { label: ">60", min: 61 },
+        ],
+        MonthlyIncome: [
+          { label: "0", min: 0, max: 0 },
+          { label: "1-1000", min: 1, max: 1000 },
+          { label: "1001-2000", min: 1001, max: 2000 },
+          { label: "2001-5000", min: 2001, max: 5000 },
+          { label: "5001-10000", min: 5001, max: 10000 },
+          { label: "10001-20000", min: 10001, max: 20000 },
+          { label: "20001-40000", min: 20001, max: 40000 },
+          { label: ">40000", min: 40001 },
+        ],
+      }
+
+      // Government Planning Insights Functions
+      function calculateDependencyRatio() {
+        const baseRecords = analyticsRecords && analyticsRecords.length ? analyticsRecords : records;
+        const activeRecords = baseRecords.filter(
+          (record) => (record.Status || "").toLowerCase() !== "disabled"
+        );
+        
+        let workingAge = 0;
+        let children = 0;
+        let seniors = 0;
+        
+        activeRecords.forEach(record => {
+          const age = parseInt(record.Age) || 0;
+          if (age >= 15 && age <= 59) {
+            workingAge++;
+          } else if (age < 15) {
+            children++;
+          } else if (age >= 60) {
+            seniors++;
+          }
+        });
+        
+        const totalDependents = children + seniors;
+        const dependencyRatio = workingAge > 0 ? (totalDependents / workingAge) * 100 : 0;
+        
+        return {
+          workingAge,
+          children,
+          seniors,
+          totalDependents,
+          dependencyRatio: Math.round(dependencyRatio * 10) / 10
+        };
+      }
+
+      function updateDependencyRatioChart() {
+        const data = calculateDependencyRatio();
+        
+        // Update the value display with color coding
+        const valueElement = document.getElementById("dependencyRatioValue");
+        if (valueElement) {
+          valueElement.textContent = `${data.dependencyRatio}%`;
+          // Add color coding based on ratio
+          valueElement.className = "metric-card-value";
+          if (data.dependencyRatio < 50) {
+            valueElement.classList.add("dependency-ratio-low");
+          } else if (data.dependencyRatio < 75) {
+            valueElement.classList.add("dependency-ratio-moderate");
+          } else {
+            valueElement.classList.add("dependency-ratio-high");
+          }
+        }
+        
+        // Update the insight text
+        const insightElement = document.getElementById("dependencyRatioInsight");
+        if (insightElement) {
+          const interpretation = data.dependencyRatio < 50 ? "Low dependency - strong workforce" : 
+                                data.dependencyRatio < 75 ? "Moderate dependency - balanced community" : 
+                                "High dependency - needs support services";
+          insightElement.textContent = `For every 100 working-age residents, there are ${data.totalDependents} dependents (${data.children} children, ${data.seniors} seniors). ${interpretation}.`;
+        }
+        
+        // Create chart data
+        const chartData = {
+          labels: ["Working Age (15-59)", "Children (0-14)", "Seniors (60+)"],
+          datasets: [{
+            label: "Population Count",
+            data: [data.workingAge, data.children, data.seniors],
+            backgroundColor: [
+              "rgba(15, 23, 42, 0.8)",   // Darkest for working age (highest priority)
+              "rgba(100, 116, 139, 0.8)",  // Slate for children
+              "rgba(148, 163, 184, 0.8)"   // Light slate for seniors
+            ],
+            borderColor: [
+              "rgb(15, 23, 42)",
+              "rgb(100, 116, 139)",
+              "rgb(148, 163, 184)"
+            ],
+            borderWidth: 2
+          }]
+        };
+        
+        // Create or update the chart
+        const ctx = document.getElementById("dependencyRatioChart");
+        if (ctx) {
+          if (window.dependencyRatioChartInstance) {
+            window.dependencyRatioChartInstance.destroy();
+          }
+          
+          window.dependencyRatioChartInstance = new Chart(ctx, {
+            type: "doughnut",
+            data: chartData,
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  position: "bottom",
+                  labels: {
+                    padding: 20,
+                    usePointStyle: true,
+                    font: {
+                      size: 12
+                    }
+                  }
+                },
+                tooltip: {
+                  backgroundColor: "#374151",
+                  titleColor: "#ffffff",
+                  bodyColor: "#ffffff",
+                  borderColor: "#4b5563",
+                  borderWidth: 1,
+                  callbacks: {
+                    label: function(context) {
+                      const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                      const percentage = ((context.parsed / total) * 100).toFixed(1);
+                      return `${context.label}: ${context.parsed} (${percentage}%)`;
+                    }
+                  }
+                }
+              },
+              cutout: "60%"
+            }
+          });
+        }
+      }
+
+      function updateGovernmentCharts() {
+        updateDependencyRatioChart();
+        updateVulnerabilityOverlapChart();
+        updateEducationIncomeMismatchChart();
+        updateHouseholdDensityChart();
+        updateVoterRegistrationGapChart();
+      }
+
+      function showSelectedGovernmentChart(chartType) {
+        // Hide all government chart cards
+        const allChartCards = document.querySelectorAll('.government-chart-card');
+        allChartCards.forEach(card => {
+          card.classList.remove('active');
+        });
+        
+        // Show the selected chart card
+        const selectedCard = document.querySelector(`[data-chart="${chartType}"]`);
+        if (selectedCard) {
+          selectedCard.classList.add('active');
+        }
+      }
+
+      function initializeGovernmentChartSelector() {
+        const selectElement = document.getElementById('governmentChartSelect');
+        if (selectElement) {
+          // Show the first chart by default
+          showSelectedGovernmentChart('dependency');
+          
+          // Add change event listener
+          selectElement.addEventListener('change', function() {
+            showSelectedGovernmentChart(this.value);
+          });
+        }
+      }
+
+      function calculateEducationIncomeMismatch() {
+        const baseRecords = analyticsRecords && analyticsRecords.length ? analyticsRecords : records;
+        const activeRecords = baseRecords.filter(
+          (record) => (record.Status || "").toLowerCase() !== "disabled"
+        );
+        
+        // Define education levels in order (highest to lowest)
+        const educationLevels = [
+          "Post Graduate",
+          "College Graduate", 
+          "College Level",
+          "High School Graduate",
+          "High School Level", 
+          "Elementary Graduate",
+          "Elementary Level",
+          "No Formal Education"
+        ];
+        
+        // Define income brackets
+        const incomeBrackets = [
+          { label: "No Income", min: 0, max: 0 },
+          { label: "Very Low (1-4,999)", min: 1, max: 4999 },
+          { label: "Low (5,000-9,999)", min: 5000, max: 9999 },
+          { label: "Low-Mid (10,000-19,999)", min: 10000, max: 19999 },
+          { label: "Mid (20,000-39,999)", min: 20000, max: 39999 },
+          { label: "High-Mid (40,000-59,999)", min: 40000, max: 59999 },
+          { label: "High (60,000+)", min: 60000, max: Infinity }
+        ];
+        
+        // Initialize counters
+        let potentialMismatch = 0;
+        const educationIncomeData = {};
+        
+        // Initialize data structure
+        educationLevels.forEach(edu => {
+          educationIncomeData[edu] = {
+            total: 0,
+            byIncome: {}
+          };
+          incomeBrackets.forEach(bracket => {
+            educationIncomeData[edu].byIncome[bracket.label] = 0;
+          });
+        });
+        
+        // Process records
+        activeRecords.forEach(record => {
+          const education = record.Education || "No Formal Education";
+          const monthlyIncome = parseFloat(record.MonthlyIncome) || 0;
+          
+          // Find appropriate income bracket
+          const incomeBracket = incomeBrackets.find(bracket => 
+            monthlyIncome >= bracket.min && monthlyIncome <= bracket.max
+          );
+          
+          if (educationIncomeData[education]) {
+            educationIncomeData[education].total++;
+            if (incomeBracket) {
+              educationIncomeData[education].byIncome[incomeBracket.label]++;
+            }
+          }
+          
+          // Identify potential mismatches
+          const isHighEducation = ["College Graduate", "Post Graduate", "College Level"].includes(education);
+          const isLowIncome = monthlyIncome < 10000;
+          
+          if (isHighEducation && isLowIncome) {
+            potentialMismatch++;
+          }
+        });
+        
+        return {
+          potentialMismatch,
+          educationIncomeData,
+          educationLevels,
+          incomeBrackets,
+          percentageMismatch: activeRecords.length > 0 ? 
+            Math.round((potentialMismatch / activeRecords.length) * 1000) / 10 : 0
+        };
+      }
+
+      function updateEducationIncomeMismatchChart() {
+        const data = calculateEducationIncomeMismatch();
+        
+        // Update the value display with color coding
+        const valueElement = document.getElementById("mismatchValue");
+        if (valueElement) {
+          valueElement.textContent = data.potentialMismatch;
+          // Add color coding based on mismatch level
+          valueElement.className = "metric-card-value";
+          if (data.percentageMismatch < 5) {
+            valueElement.classList.add("mismatch-low");
+          } else if (data.percentageMismatch < 15) {
+            valueElement.classList.add("mismatch-moderate");
+          } else {
+            valueElement.classList.add("mismatch-high");
+          }
+        }
+        
+        // Update the insight text
+        const insightElement = document.getElementById("mismatchInsight");
+        if (insightElement) {
+          const interpretation = data.percentageMismatch < 5 ? "Low mismatch - good job-education alignment" :
+                                data.percentageMismatch < 15 ? "Moderate mismatch - some underemployment" :
+                                "High mismatch - significant underemployment issue";
+          insightElement.textContent = `Found ${data.potentialMismatch} residents with high education but low income (${data.percentageMismatch}% of population). ${interpretation}. Consider job placement programs or skills training.`;
+        }
+        
+        // Prepare data for stacked bar chart
+        const chartData = {
+          labels: data.educationLevels,
+          datasets: data.incomeBrackets.map((bracket, index) => ({
+            label: bracket.label,
+            data: data.educationLevels.map(edu => 
+              data.educationIncomeData[edu].byIncome[bracket.label] || 0
+            ),
+            backgroundColor: [
+              "rgba(15, 23, 42, 0.8)",   // Darkest for No Income
+              "rgba(30, 41, 59, 0.8)",   // Very dark for Very Low
+              "rgba(51, 65, 85, 0.8)",   // Dark slate for Low
+              "rgba(71, 85, 105, 0.8)",  // Medium slate for Low-Mid
+              "rgba(100, 116, 139, 0.8)",  // Slate for Mid
+              "rgba(148, 163, 184, 0.8)",  // Light slate for High-Mid
+              "rgba(203, 213, 225, 0.8)"   // Lightest for High
+            ][index],
+            borderColor: [
+              "rgb(15, 23, 42)",
+              "rgb(30, 41, 59)",
+              "rgb(51, 65, 85)",
+              "rgb(71, 85, 105)",
+              "rgb(100, 116, 139)",
+              "rgb(148, 163, 184)",
+              "rgb(203, 213, 225)"
+            ][index],
+            borderWidth: 1
+          }))
+        };
+        
+        // Create or update the chart
+        const ctx = document.getElementById("mismatchChart");
+        if (ctx) {
+          if (window.educationIncomeMismatchChartInstance) {
+            window.educationIncomeMismatchChartInstance.destroy();
+          }
+          
+          window.educationIncomeMismatchChartInstance = new Chart(ctx, {
+            type: "bar",
+            data: chartData,
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  position: "bottom",
+                  labels: {
+                    padding: 10,
+                    usePointStyle: true,
+                    font: {
+                      size: 10
+                    }
+                  }
+                },
+                tooltip: {
+                  backgroundColor: "#374151",
+                  titleColor: "#ffffff",
+                  bodyColor: "#ffffff",
+                  borderColor: "#4b5563",
+                  borderWidth: 1,
+                  callbacks: {
+                    label: function(context) {
+                      const total = context.chart.data.datasets.reduce((sum, dataset) => 
+                        sum + dataset.data[context.dataIndex], 0
+                      );
+                      const percentage = total > 0 ? 
+                        ((context.parsed / total) * 100).toFixed(1) : 0;
+                      return `${context.dataset.label}: ${context.parsed} (${percentage}%)`;
+                    }
+                  }
+                }
+              },
+              scales: {
+                x: {
+                  stacked: true,
+                  ticks: {
+                    maxRotation: 45,
+                    minRotation: 45
+                  }
+                },
+                y: {
+                  stacked: true,
+                  beginAtZero: true,
+                  ticks: {
+                    stepSize: 1
+                  }
+                }
+              }
+            }
+          });
+        }
+      }
+
+      function calculateHouseholdDensity() {
+        const baseRecords = analyticsRecords && analyticsRecords.length ? analyticsRecords : records;
+        const activeRecords = baseRecords.filter(
+          (record) => (record.Status || "").toLowerCase() !== "disabled"
+        );
+        
+        // Group records by House Number
+        const householdMap = {};
+        activeRecords.forEach(record => {
+          const houseNo = record.HouseNo || "Unknown";
+          if (!householdMap[houseNo]) {
+            householdMap[houseNo] = 0;
+          }
+          householdMap[houseNo]++;
+        });
+        
+        // Calculate density statistics
+        const densities = Object.values(householdMap);
+        const totalHouseholds = densities.length;
+        const totalPeople = densities.reduce((sum, count) => sum + count, 0);
+        const averageDensity = totalHouseholds > 0 ? totalPeople / totalHouseholds : 0;
+        
+        // Categorize by density levels
+        const lowDensity = densities.filter(count => count <= 3).length;
+        const moderateDensity = densities.filter(count => count >= 4 && count <= 6).length;
+        const highDensity = densities.filter(count => count >= 7 && count <= 9).length;
+        const veryHighDensity = densities.filter(count => count >= 10).length;
+        
+        // Find most crowded household
+        const maxDensity = Math.max(...densities);
+        const householdsWithMaxDensity = densities.filter(count => count === maxDensity).length;
+        
+        return {
+          totalHouseholds,
+          totalPeople,
+          averageDensity: Math.round(averageDensity * 10) / 10,
+          lowDensity,
+          moderateDensity,
+          highDensity,
+          veryHighDensity,
+          maxDensity,
+          householdsWithMaxDensity,
+          densityDistribution: {
+            "1-3 people": lowDensity,
+            "4-6 people": moderateDensity,
+            "7-9 people": highDensity,
+            "10+ people": veryHighDensity
+          }
+        };
+      }
+
+      function updateHouseholdDensityChart() {
+        const data = calculateHouseholdDensity();
+        
+        // Update the value display with color coding
+        const valueElement = document.getElementById("densityValue");
+        if (valueElement) {
+          valueElement.textContent = data.averageDensity;
+          // Add color coding based on average density
+          valueElement.className = "metric-card-value";
+          if (data.averageDensity <= 4) {
+            valueElement.classList.add("density-low");
+          } else if (data.averageDensity <= 7) {
+            valueElement.classList.add("density-moderate");
+          } else {
+            valueElement.classList.add("density-high");
+          }
+        }
+        
+        // Update the insight text
+        const insightElement = document.getElementById("densityInsight");
+        if (insightElement) {
+          let interpretation = "";
+          if (data.averageDensity <= 4) {
+            interpretation = "Low density - comfortable living conditions";
+          } else if (data.averageDensity <= 7) {
+            interpretation = "Moderate density - typical urban density";
+          } else {
+            interpretation = "High density - potential overcrowding issues";
+          }
+          
+          insightElement.textContent = `Average ${data.averageDensity} people per household across ${data.totalHouseholds} households. ${data.veryHighDensity} households have 10+ people (${Math.round((data.veryHighDensity / data.totalHouseholds) * 100)}%). ${interpretation}.`;
+        }
+        
+        // Prepare data for bar chart
+        const chartData = {
+          labels: Object.keys(data.densityDistribution),
+          datasets: [{
+            label: "Number of Households",
+            data: Object.values(data.densityDistribution),
+            backgroundColor: [
+              "rgba(15, 23, 42, 0.8)",   // 1-3 people - Darkest (low density)
+              "rgba(51, 65, 85, 0.8)",   // 4-6 people - Dark slate (moderate)
+              "rgba(100, 116, 139, 0.8)",  // 7-9 people - Slate (high)
+              "rgba(148, 163, 184, 0.8)"   // 10+ people - Light slate (very high)
+            ],
+            borderColor: [
+              "rgb(15, 23, 42)",
+              "rgb(51, 65, 85)",
+              "rgb(100, 116, 139)",
+              "rgb(148, 163, 184)"
+            ],
+            borderWidth: 1
+          }]
+        };
+        
+        // Create or update the chart
+        const ctx = document.getElementById("densityChart");
+        if (ctx) {
+          if (window.householdDensityChartInstance) {
+            window.householdDensityChartInstance.destroy();
+          }
+          
+          window.householdDensityChartInstance = new Chart(ctx, {
+            type: "bar",
+            data: chartData,
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  display: false
+                },
+                tooltip: {
+                  backgroundColor: "#374151",
+                  titleColor: "#ffffff",
+                  bodyColor: "#ffffff",
+                  borderColor: "#4b5563",
+                  borderWidth: 1,
+                  callbacks: {
+                    label: function(context) {
+                      const total = data.totalHouseholds;
+                      const percentage = total > 0 ? 
+                        ((context.parsed.y / total) * 100).toFixed(1) : 0;
+                      return `${context.parsed.y} households (${percentage}% of all households)`;
+                    }
+                  }
+                }
+              },
+              scales: {
+                x: {
+                  title: {
+                    display: true,
+                    text: "People per Household"
+                  }
+                },
+                y: {
+                  beginAtZero: true,
+                  ticks: {
+                    stepSize: 1
+                  },
+                  title: {
+                    display: true,
+                    text: "Number of Households"
+                  }
+                }
+              }
+            }
+          });
+        }
+      }
+
+      function calculateVoterRegistrationGap() {
+        const baseRecords = analyticsRecords && analyticsRecords.length ? analyticsRecords : records;
+        const activeRecords = baseRecords.filter(
+          (record) => (record.Status || "").toLowerCase() !== "disabled"
+        );
+        
+        // Calculate age based on birthdate - check multiple possible field names
+        function calculateAge(birthdate, ageField) {
+          // If birthdate is available, use it
+          if (birthdate) {
+            const today = new Date();
+            const birthDate = new Date(birthdate);
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDiff = today.getMonth() - birthDate.getMonth();
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+              age--;
+            }
+            return age;
+          }
+          // If age field is available, use it
+          if (ageField && !isNaN(parseInt(ageField))) {
+            return parseInt(ageField);
+          }
+          return 0;
+        }
+        
+        let eligibleVoters = 0;
+        let registeredVoters = 0;
+        let unregisteredVoters = 0;
+        
+        // Age groups for analysis
+        const ageGroups = {
+          "18-25": { eligible: 0, unregistered: 0 },
+          "26-35": { eligible: 0, unregistered: 0 },
+          "36-45": { eligible: 0, unregistered: 0 },
+          "46-55": { eligible: 0, unregistered: 0 },
+          "56-65": { eligible: 0, unregistered: 0 },
+          "65+": { eligible: 0, unregistered: 0 }
+        };
+        
+        // Debug: Log sample records to understand data structure
+        console.log("Voter Registration Debug - Sample records:", activeRecords.slice(0, 3));
+        
+        activeRecords.forEach(record => {
+          // Check for birthdate in multiple possible field names
+          const birthdate = record.Birthdate || record.DateOfBirth || record.dateOfBirth || record.birthdate;
+          const age = calculateAge(birthdate, record.Age);
+          
+          // Check registration status - handle multiple possible values
+          let isRegistered = false;
+          const voterStatus = record.RegisteredVoter || record.registeredVoter || "";
+          if (voterStatus && typeof voterStatus === 'string') {
+            isRegistered = voterStatus.toLowerCase() === "yes";
+          }
+          
+          // Debug: Log problematic records
+          if (age >= 18 && !isRegistered) {
+            console.log("Unregistered voter found:", {
+              name: `${record.FirstName} ${record.LastName}`,
+              age: age,
+              birthdate: birthdate,
+              voterStatus: voterStatus,
+              isRegistered: isRegistered
+            });
+          }
+          
+          if (age >= 18) {
+            eligibleVoters++;
+            
+            // Determine age group
+            let ageGroup = "";
+            if (age <= 25) ageGroup = "18-25";
+            else if (age <= 35) ageGroup = "26-35";
+            else if (age <= 45) ageGroup = "36-45";
+            else if (age <= 55) ageGroup = "46-55";
+            else if (age <= 65) ageGroup = "56-65";
+            else ageGroup = "65+";
+            
+            ageGroups[ageGroup].eligible++;
+            
+            if (isRegistered) {
+              registeredVoters++;
+            } else {
+              unregisteredVoters++;
+              ageGroups[ageGroup].unregistered++;
+            }
+          }
+        });
+        
+        // Debug: Log final counts
+        console.log("Voter Registration Debug - Final counts:", {
+          eligibleVoters,
+          registeredVoters,
+          unregisteredVoters,
+          registrationRate: eligibleVoters > 0 ? (registeredVoters / eligibleVoters * 100).toFixed(1) : 0,
+          gapRate: eligibleVoters > 0 ? (unregisteredVoters / eligibleVoters * 100).toFixed(1) : 0
+        });
+        
+        const registrationRate = eligibleVoters > 0 ? 
+          Math.round((registeredVoters / eligibleVoters) * 1000) / 10 : 0;
+        const gapRate = eligibleVoters > 0 ? 
+          Math.round((unregisteredVoters / eligibleVoters) * 1000) / 10 : 0;
+        
+        return {
+          eligibleVoters,
+          registeredVoters,
+          unregisteredVoters,
+          registrationRate,
+          gapRate,
+          ageGroups
+        };
+      }
+
+      function updateVoterRegistrationGapChart() {
+        const data = calculateVoterRegistrationGap();
+        
+        // Update the value display with color coding
+        const valueElement = document.getElementById("voterGapValue");
+        if (valueElement) {
+          valueElement.textContent = data.gapRate + "%";
+          // Add color coding based on gap rate
+          valueElement.className = "metric-card-value";
+          if (data.gapRate <= 10) {
+            valueElement.classList.add("voter-gap-low");
+          } else if (data.gapRate <= 25) {
+            valueElement.classList.add("voter-gap-moderate");
+          } else {
+            valueElement.classList.add("voter-gap-high");
+          }
+        }
+        
+        // Update the insight text
+        const insightElement = document.getElementById("voterGapInsight");
+        if (insightElement) {
+          let interpretation = "";
+          if (data.gapRate <= 10) {
+            interpretation = "Excellent voter registration coverage";
+          } else if (data.gapRate <= 25) {
+            interpretation = "Good registration rate, room for improvement";
+          } else {
+            interpretation = "Significant registration gap, outreach needed";
+          }
+          
+          insightElement.textContent = `${data.unregisteredVoters} of ${data.eligibleVoters} eligible voters are unregistered (${data.gapRate}% gap). Registration rate: ${data.registrationRate}%. ${interpretation}.`;
+        }
+        
+        // Prepare data for horizontal bar chart (age group analysis)
+        const chartData = {
+          labels: Object.keys(data.ageGroups),
+          datasets: [
+            {
+              label: "Registered",
+              data: Object.values(data.ageGroups).map(group => 
+                group.eligible - group.unregistered
+              ),
+              backgroundColor: "rgba(15, 23, 42, 0.8)",
+              borderColor: "rgb(15, 23, 42)",
+              borderWidth: 1
+            },
+            {
+              label: "Unregistered",
+              data: Object.values(data.ageGroups).map(group => group.unregistered),
+              backgroundColor: "rgba(100, 116, 139, 0.8)",
+              borderColor: "rgb(100, 116, 139)",
+              borderWidth: 1
+            }
+          ]
+        };
+        
+        // Create or update the chart
+        const ctx = document.getElementById("voterGapChart");
+        if (ctx) {
+          if (window.voterRegistrationGapChartInstance) {
+            window.voterRegistrationGapChartInstance.destroy();
+          }
+          
+          window.voterRegistrationGapChartInstance = new Chart(ctx, {
+            type: "bar",
+            data: chartData,
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              indexAxis: 'y', // Horizontal bar chart
+              plugins: {
+                legend: {
+                  position: "bottom",
+                  labels: {
+                    padding: 10,
+                    usePointStyle: true,
+                    font: {
+                      size: 10
+                    }
+                  }
+                },
+                tooltip: {
+                  backgroundColor: "#374151",
+                  titleColor: "#ffffff",
+                  bodyColor: "#ffffff",
+                  borderColor: "#4b5563",
+                  borderWidth: 1,
+                  callbacks: {
+                    label: function(context) {
+                      const total = context.dataset.data[context.dataIndex] + 
+                        (context.datasetIndex === 0 ? 
+                          context.chart.data.datasets[1].data[context.dataIndex] :
+                          context.chart.data.datasets[0].data[context.dataIndex]);
+                      const percentage = total > 0 ? 
+                        ((context.parsed / total) * 100).toFixed(1) : 0;
+                      return `${context.dataset.label}: ${context.parsed} (${percentage}%)`;
+                    }
+                  }
+                }
+              },
+              scales: {
+                x: {
+                  stacked: true,
+                  beginAtZero: true,
+                  ticks: {
+                    stepSize: 1
+                  },
+                  title: {
+                    display: true,
+                    text: "Number of Voters"
+                  }
+                },
+                y: {
+                  stacked: true,
+                  title: {
+                    display: true,
+                    text: "Age Groups"
+                  }
+                }
+              }
+            }
+          });
+        }
+      }
+
+      function calculateVulnerabilityOverlap() {
+        const baseRecords = analyticsRecords && analyticsRecords.length ? analyticsRecords : records;
+        const activeRecords = baseRecords.filter(
+          (record) => (record.Status || "").toLowerCase() !== "disabled"
+        );
+        
+        let highestPriority = 0; // PWD + 4Ps + Low Income
+        let highPriority = 0;    // PWD + 4Ps OR PWD + Low Income OR 4Ps + Low Income
+        let moderatePriority = 0; // PWD OR 4Ps OR Low Income only
+        let none = 0;            // No vulnerability factors
+        
+        activeRecords.forEach(record => {
+          const isPWD = (record.PWD || "").toLowerCase() === "yes";
+          const is4Ps = (record.Beneficiary4Ps || "").toLowerCase() === "yes";
+          const monthlyIncome = parseFloat(record.MonthlyIncome) || 0;
+          const isLowIncome = monthlyIncome < 5000;
+          
+          const vulnerabilityCount = (isPWD ? 1 : 0) + (is4Ps ? 1 : 0) + (isLowIncome ? 1 : 0);
+          
+          if (vulnerabilityCount === 3) {
+            highestPriority++;
+          } else if (vulnerabilityCount === 2) {
+            highPriority++;
+          } else if (vulnerabilityCount === 1) {
+            moderatePriority++;
+          } else {
+            none++;
+          }
+        });
+        
+        return {
+          highestPriority,
+          highPriority,
+          moderatePriority,
+          none,
+          totalVulnerable: highestPriority + highPriority + moderatePriority,
+          percentageVulnerable: activeRecords.length > 0 ? 
+            Math.round(((highestPriority + highPriority + moderatePriority) / activeRecords.length) * 1000) / 10 : 0
+        };
+      }
+
+      function updateVulnerabilityOverlapChart() {
+        const data = calculateVulnerabilityOverlap();
+        
+        // Update the value display with color coding
+        const valueElement = document.getElementById("vulnerabilityValue");
+        if (valueElement) {
+          valueElement.textContent = data.highestPriority;
+          // Add color coding based on highest priority count
+          valueElement.className = "metric-card-value";
+          if (data.highestPriority === 0) {
+            valueElement.classList.add("vulnerability-none");
+          } else if (data.highestPriority <= 5) {
+            valueElement.classList.add("vulnerability-moderate");
+          } else if (data.highestPriority <= 15) {
+            valueElement.classList.add("vulnerability-high");
+          } else {
+            valueElement.classList.add("vulnerability-highest");
+          }
+        }
+        
+        // Update the insight text
+        const insightElement = document.getElementById("vulnerabilityInsight");
+        if (insightElement) {
+          const interpretation = data.highestPriority === 0 ? "No highest priority households identified" :
+                                data.highestPriority <= 5 ? "Few highest priority households - manageable caseload" :
+                                data.highestPriority <= 15 ? "Moderate number - requires targeted intervention" :
+                                "High number - immediate action needed";
+          insightElement.textContent = `Found ${data.highestPriority} highest priority households (PWD + 4Ps + Low Income), ${data.highPriority} high priority, and ${data.moderatePriority} moderate priority households. ${interpretation}.`;
+        }
+        
+        // Create chart data for vulnerability overlap
+        const chartData = {
+          labels: ["Highest Priority (3 factors)", "High Priority (2 factors)", "Moderate Priority (1 factor)", "No Priority Factors"],
+          datasets: [{
+            label: "Household Count",
+            data: [data.highestPriority, data.highPriority, data.moderatePriority, data.none],
+            backgroundColor: [
+              "rgba(15, 23, 42, 0.8)",   // Darkest for highest priority
+              "rgba(51, 65, 85, 0.8)",   // Dark slate for high priority
+              "rgba(100, 116, 139, 0.8)",  // Slate for moderate priority
+              "rgba(148, 163, 184, 0.8)"   // Light slate for none
+            ],
+            borderColor: [
+              "rgb(15, 23, 42)",
+              "rgb(51, 65, 85)",
+              "rgb(100, 116, 139)",
+              "rgb(148, 163, 184)"
+            ],
+            borderWidth: 2
+          }]
+        };
+        
+        // Create or update the chart
+        const ctx = document.getElementById("vulnerabilityChart");
+        if (ctx) {
+          if (window.vulnerabilityChartInstance) {
+            window.vulnerabilityChartInstance.destroy();
+          }
+          
+          window.vulnerabilityChartInstance = new Chart(ctx, {
+            type: "bar",
+            data: chartData,
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  display: false
+                },
+                tooltip: {
+                  backgroundColor: "#374151",
+                  titleColor: "#ffffff",
+                  bodyColor: "#ffffff",
+                  borderColor: "#4b5563",
+                  borderWidth: 1,
+                  callbacks: {
+                    label: function(context) {
+                      const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                      const percentage = ((context.parsed / total) * 100).toFixed(1);
+                      return `${context.label}: ${context.parsed} (${percentage}%)`;
+                    }
+                  }
+                }
+              },
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  ticks: {
+                    stepSize: 1
+                  }
+                }
+              }
+            }
+          });
+        }
+      };
+
+      const textMetrics = [
+        { key: "Sex", label: "Sex" },
+        { key: "CivilStatus", label: "Civil Status" },
+        { key: "Education", label: "Education" },
+        { key: "Occupation", label: "Occupation" },
+        { key: "RoleInHH", label: "Role in HH" },
+      ];
+
+      const numberMetrics = [
+        { key: "Age", label: "Age" },
+        { key: "MonthlyIncome", label: "Monthly Income" },
+      ];
+
+      const accountColumns = [
+        { key: "AccountID", label: "ID", inputType: "number", editable: false },
+        { key: "Email", label: "Email", inputType: "email" },
+        { key: "Username", label: "Username", inputType: "text" },
+        { key: "Password", label: "Password", inputType: "password", formOnly: true },
+        {
+          key: "HashedPassword",
+          label: "Hashed Password",
+          inputType: "text",
+          tableOnly: true,
+        },
+        {
+          key: "Status",
+          label: "Status",
+          inputType: "select",
+          options: ["Enabled", "Disabled"],
+        },
+        {
+          key: "Type",
+          label: "Type",
+          inputType: "select",
+          options: ["Officer"],
+        },
+      ];
+
+      let records = [];
+      let textChart = null;
+      let numberChart = null;
+      let formMode = "add";
+      let pagination = { page: 1, pageSize: 25, total: 0, disabledTotal: 0 };
+      let analyticsRecords = [];
+      let accountRecords = [];
+      let accountFormMode = "add";
+      let accountPagination = { page: 1, pageSize: 25, total: 0 };
+      let activityRecords = [];
+      let activityPagination = { page: 1, pageSize: 25, total: 0 };
+      let globalStats = { total: 0, disabled: 0 };
+
+      const formFields = document.getElementById("formFields");
+      const formModeLabel = document.getElementById("formModeLabel");
+      const dataFormTitle = document.getElementById("dataFormTitle");
+      const saveButton = document.getElementById("saveButton");
+      const resetButton = document.getElementById("resetButton");
+      const recordForm = document.getElementById("recordForm");
+      const tableHead = document.getElementById("tableHead");
+      const tableBody = document.getElementById("tableBody");
+      const searchColumn = document.getElementById("searchColumn");
+      const searchInput = document.getElementById("searchInput");
+      const searchSelect = document.getElementById("searchSelect");
+      const searchRange = document.getElementById("searchRange");
+      const sortColumn = document.getElementById("sortColumn");
+      const sortOrder = document.getElementById("sortOrder");
+      const sortOrderLabel = document.getElementById("sortOrderLabel");
+      const searchInputGroup = document.getElementById("searchInputGroup");
+      const searchSelectGroup = document.getElementById("searchSelectGroup");
+      const searchRangeGroup = document.getElementById("searchRangeGroup");
+      const searchButton = document.getElementById("searchButton");
+      const clearButton = document.getElementById("clearButton");
+      const analyticsTotalCount = document.getElementById("analyticsTotalCount");
+      const analyticsActiveCount = document.getElementById("analyticsActiveCount");
+      const analyticsDisabledCount = document.getElementById("analyticsDisabledCount");
+      const textMetricSelect = document.getElementById("textMetric");
+      const numberMetricSelect = document.getElementById("numberMetric");
+      const textChartType = document.getElementById("textChartType");
+      const numberChartType = document.getElementById("numberChartType");
+      const analyticsScope = document.getElementById("analyticsScope");
+      const prevPage = document.getElementById("prevPage");
+      const nextPage = document.getElementById("nextPage");
+      const pageInfo = document.getElementById("pageInfo");
+      const logoutButton = document.getElementById("logoutButton");
+      const accountSection = document.getElementById("accountsSection");
+      const accountForm = document.getElementById("accountForm");
+      const accountFormFields = document.getElementById("accountFormFields");
+      const accountSaveButton = document.getElementById("accountSaveButton");
+      const accountResetButton = document.getElementById("accountResetButton");
+      const accountSearchColumn = document.getElementById("accountSearchColumn");
+      const accountSearchInput = document.getElementById("accountSearchInput");
+      const accountSearchSelect = document.getElementById("accountSearchSelect");
+      const accountSortColumn = document.getElementById("accountSortColumn");
+      const accountSortOrder = document.getElementById("accountSortOrder");
+      const accountSearchInputGroup = document.getElementById("accountSearchInputGroup");
+      const accountSearchSelectGroup = document.getElementById("accountSearchSelectGroup");
+      const accountSearchButton = document.getElementById("accountSearchButton");
+      const accountClearButton = document.getElementById("accountClearButton");
+      const accountsTableHead = document.getElementById("accountsTableHead");
+      const accountsTableBody = document.getElementById("accountsTableBody");
+      const accountPrevPage = document.getElementById("accountPrevPage");
+      const accountNextPage = document.getElementById("accountNextPage");
+      const accountPageInfo = document.getElementById("accountPageInfo");
+      const activityTableBody = document.getElementById("activityTableBody");
+      const activityPrevPage = document.getElementById("activityPrevPage");
+      const activityNextPage = document.getElementById("activityNextPage");
+      const activityPageInfo = document.getElementById("activityPageInfo");
+      const textMetricSummary = document.getElementById("textMetricSummary");
+      const numberMetricSummary = document.getElementById("numberMetricSummary");
+
+      function createInputField(column) {
+        const wrapper = document.createElement("div");
+        wrapper.className = "field";
+        wrapper.dataset.key = column.key;
+        
+        const label = document.createElement("label");
+        label.textContent = column.label;
+        label.setAttribute("for", `field_${column.key}`);
+        wrapper.appendChild(label);
+        
+        let input;
+        if (column.inputType === "select") {
+          input = document.createElement("select");
+          column.options.forEach((optionValue) => {
+            const option = document.createElement("option");
+            option.value = optionValue;
+            option.textContent = optionValue;
+            input.appendChild(option);
+          });
+          
+          // Add event listener for Others option
+          input.addEventListener("change", function() {
+            handleOthersOption(this, column.key);
+          });
+        } else {
+          input = document.createElement("input");
+          input.type = column.inputType;
+        }
+        
+        input.id = `field_${column.key}`;
+        input.name = column.key;
+        if (column.editable === false) {
+          input.disabled = true;
+        }
+        if (column.defaultValue !== undefined) {
+          input.value = column.defaultValue;
+        }
+        wrapper.appendChild(input);
+        
+        return wrapper;
+      }
+      
+      function handleOthersOption(selectElement, fieldKey) {
+        const wrapper = selectElement.closest(".field");
+        const othersInputId = `field_${fieldKey}_others`;
+        let othersInput = document.getElementById(othersInputId);
+        
+        if (selectElement.value === "Others") {
+          if (!othersInput) {
+            othersInput = document.createElement("input");
+            othersInput.type = "text";
+            othersInput.id = othersInputId;
+            othersInput.name = `${fieldKey}_others`;
+            othersInput.placeholder = `Specify ${fieldKey.toLowerCase()}`;
+            othersInput.className = "others-input";
+            othersInput.style.marginTop = "8px";
+            othersInput.style.display = "block";
+            othersInput.style.width = "100%";
+            wrapper.appendChild(othersInput);
+          } else {
+            othersInput.style.display = "block";
+          }
+        } else if (othersInput) {
+          othersInput.style.display = "none";
+          othersInput.value = "";
+        }
+      }
+
+      function handleCustomDropdownValue(column, input, value) {
+        if (column.inputType === "select" && column.options && value) {
+          // Check if the value exists in the predefined options
+          const optionExists = column.options.some(option => option === value);
+          
+          if (!optionExists && column.options.includes("Others")) {
+            // Value not in options, set to "Others" and show custom input
+            input.value = "Others";
+            
+            // Create or show the others input field
+            const wrapper = input.closest(".field");
+            const othersInputId = `field_${column.key}_others`;
+            let othersInput = document.getElementById(othersInputId);
+            
+            if (!othersInput) {
+              othersInput = document.createElement("input");
+              othersInput.type = "text";
+              othersInput.id = othersInputId;
+              othersInput.name = `${column.key}_others`;
+              othersInput.placeholder = `Specify ${column.key.toLowerCase()}`;
+              othersInput.className = "others-input";
+              othersInput.style.marginTop = "8px";
+              othersInput.style.display = "block";
+              othersInput.style.width = "100%";
+              wrapper.appendChild(othersInput);
+            } else {
+              othersInput.style.display = "block";
+            }
+            
+            // Pre-populate with the original custom value
+            othersInput.value = value;
+            return true; // Custom value handled
+          }
+        }
+        return false; // No custom handling needed
+      }
+
+      function createAccountInputField(column) {
+        const wrapper = document.createElement("div");
+        wrapper.className = "field";
+        wrapper.dataset.key = column.key;
+        const label = document.createElement("label");
+        label.textContent = column.label;
+        label.setAttribute("for", `account_${column.key}`);
+        wrapper.appendChild(label);
+        let input;
+        if (column.inputType === "select") {
+          input = document.createElement("select");
+          column.options.forEach((optionValue) => {
+            const option = document.createElement("option");
+            option.value = optionValue;
+            option.textContent = optionValue;
+            input.appendChild(option);
+          });
+        } else {
+          input = document.createElement("input");
+          input.type = column.inputType;
+          if (column.key === "Password") {
+            input.type = "text";
+          }
+        }
+        input.id = `account_${column.key}`;
+        input.name = column.key;
+        if (column.key === "Email") {
+          input.required = true;
+          input.pattern = "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$";
+        }
+        if (column.key === "Username") {
+          input.required = true;
+        }
+        if (column.editable === false) {
+          input.disabled = true;
+        }
+        wrapper.appendChild(input);
+        if (column.key === "Password") {
+          const strength = document.createElement("div");
+          strength.id = "accountPasswordStrength";
+          strength.className = "password-strength";
+          input.addEventListener("input", () => {
+            evaluatePasswordStrength(input.value || "", strength);
+          });
+          wrapper.appendChild(strength);
+        }
+        return wrapper;
+      }
+
+      function buildFormFields() {
+        formFields.innerHTML = "";
+        columns.forEach((column) => {
+          formFields.appendChild(createInputField(column));
+        });
+      }
+
+      function buildAccountFormFields() {
+        accountFormFields.innerHTML = "";
+        accountColumns
+          .filter((column) => !column.tableOnly)
+          .forEach((column) => {
+            accountFormFields.appendChild(createAccountInputField(column));
+          });
+      }
+
+      function setFormMode(mode, record = null) {
+        formMode = mode;
+        if (mode === "add") {
+          recordForm.classList.remove("editing");
+          if (dataFormTitle) dataFormTitle.textContent = "Data Entry";
+          formModeLabel.textContent = "Add New Record";
+          saveButton.textContent = "Add Record";
+          resetButton.textContent = "Reset";
+          columns.forEach((column) => {
+            const input = document.getElementById(`field_${column.key}`);
+            if (!input) return;
+            if (column.key === "ID") {
+              input.value = "";
+              input.placeholder = "Auto";
+            } else if (column.key === "BarangayAddress") {
+              input.value = "";
+              input.placeholder = "Brgy. San Isidro";
+            } else {  
+              input.value = "";
+            }
+          });
+        } else {
+          recordForm.classList.add("editing");
+          if (dataFormTitle) dataFormTitle.textContent = "Data Editing";
+          formModeLabel.textContent = "Editing Record";
+          saveButton.textContent = "Save Changes";
+          resetButton.textContent = "Cancel Edit";
+          columns.forEach((column) => {
+            const input = document.getElementById(`field_${column.key}`);
+            if (!input) return;
+            let value = record ? record[column.key] ?? "" : "";
+            if (column.key === "DateOfBirth" && typeof value === "string") {
+              value = value.slice(0, 10);
+            }
+            
+            // Handle custom dropdown values (set to "Others" and show custom input)
+            const isCustomValue = handleCustomDropdownValue(column, input, value);
+            
+            // Only set the value directly if it's not a custom dropdown value
+            if (!isCustomValue) {
+              input.value = value;
+            }
+          });
+        }
+      }
+
+      function getFormData() {
+        const data = {};
+        columns.forEach((column) => {
+          const input = document.getElementById(`field_${column.key}`);
+          if (!input) return;
+          data[column.key] = input.value;
+        });
+        return data;
+      }
+
+      function setAccountFormMode(mode, record = null) {
+        accountFormMode = mode;
+        const statusWrapper = accountFormFields.querySelector(
+          '[data-key="Status"]'
+        );
+        if (statusWrapper) {
+          statusWrapper.style.display = mode === "add" ? "none" : "";
+        }
+        if (mode === "add") {
+          accountForm.classList.remove("editing");
+          accountSaveButton.textContent = "Add Account";
+          accountResetButton.textContent = "Reset";
+          accountColumns.forEach((column) => {
+            const input = document.getElementById(`account_${column.key}`);
+            if (!input) return;
+            if (column.key === "AccountID") {
+              input.value = "";
+              input.placeholder = "Auto";
+            } else if (column.key === "Password") {
+              input.value = "";
+              input.placeholder = "";
+            } else if (column.key === "Status") {
+              input.value = "Enabled";
+            } else if (column.key === "Type") {
+              input.value = "Officer";
+            } else {
+              input.value = "";
+            }
+            if (column.key === "Status") {
+              input.disabled = false;
+            }
+          });
+        } else if (record) {
+          accountForm.classList.add("editing");
+          accountSaveButton.textContent = "Update Account";
+          accountResetButton.textContent = "Cancel Edit";
+          accountColumns.forEach((column) => {
+            const input = document.getElementById(`account_${column.key}`);
+            if (!input) return;
+            if (column.key === "Password") {
+              input.value = "";
+              input.placeholder = "blank password to keep old password";
+            } else {
+              input.value = record[column.key] ?? "";
+            }
+            if (column.key === "Status") {
+              input.disabled = record.Status === "Disabled";
+            }
+            if (column.key === "Type") {
+              if (record.Type === "Admin") {
+                if (![...input.options].some((option) => option.value === "Admin")) {
+                  const option = document.createElement("option");
+                  option.value = "Admin";
+                  option.textContent = "Admin";
+                  input.appendChild(option);
+                }
+                input.value = "Admin";
+                input.disabled = true;
+              } else {
+                input.value = "Officer";
+                input.disabled = false;
+              }
+            }
+          });
+        }
+      }
+
+      function getAccountFormData() {
+        const data = {};
+        accountColumns.forEach((column) => {
+          const input = document.getElementById(`account_${column.key}`);
+          if (!input) return;
+          data[column.key] = input.value;
+        });
+        return data;
+      }
+
+      function evaluatePasswordStrength(value, strengthElement) {
+        if (!strengthElement) return null;
+        strengthElement.className = "password-strength";
+        if (!value) {
+          strengthElement.textContent = "";
+          return null;
+        }
+        const length = value.length;
+        const hasLower = /[a-z]/.test(value);
+        const hasUpper = /[A-Z]/.test(value);
+        const hasDigit = /[0-9]/.test(value);
+        const hasSpecial = /[^A-Za-z0-9]/.test(value);
+        let score = 0; // 0 = Bad
+        if (length >= 4) {
+          // At least 4 characters → Weak by default
+          score = 1;
+        }
+        if (length >= 8) {
+          // 8+ chars only is still Weak unless it qualifies for Good or Best
+          if (hasLower && hasUpper && hasDigit && hasSpecial) {
+            // Best: has lower, upper, digit, and symbol
+            score = 3;
+          } else if (hasLower && hasUpper && hasDigit && !hasSpecial) {
+            // Good: has lower, upper, and digit but no symbol
+            score = 2;
+          } else {
+            // 8+ chars but missing some categories → remain Weak (score 1)
+            score = 1;
+          }
+        }
+        const labels = ["Bad", "Weak", "Good", "Best"];
+        const classes = ["bad", "weak", "good", "best"];
+        strengthElement.classList.add(classes[score]);
+        strengthElement.textContent = `Password strength: ${labels[score]}`;
+        return score;
+      }
+
+      function hasUnsavedRecordFormData() {
+        return columns.some((column) => {
+          if (column.key === "ID") return false;
+          if (column.inputType === "select") return false;
+          const input = document.getElementById(`field_${column.key}`);
+          return input && input.value.trim() !== "";
+        });
+      }
+
+      function hasUnsavedAccountFormData() {
+        return accountColumns.some((column) => {
+          if (column.key === "AccountID") return false;
+          if (column.inputType === "select") return false;
+          const input = document.getElementById(`account_${column.key}`);
+          return input && input.value.trim() !== "";
+        });
+      }
+
+      function handleRecordEditClick(record) {
+        if (formMode === "add" && hasUnsavedRecordFormData()) {
+          const proceed = window.confirm(
+            "Unsaved text input detected.\n\nYou have entered text data that hasn't been saved yet. If you proceed, all your current text inputs will be lost.\n\nClear form and edit the selected record?"
+          );
+          if (!proceed) {
+            return;
+          }
+        }
+        setFormMode("edit", record);
+      }
+
+      function handleAccountEditClick(record) {
+        if (accountFormMode === "add" && hasUnsavedAccountFormData()) {
+          const proceed = window.confirm(
+            "⚠️ Unsaved text input detected!\n\nYou have entered text data in the account form that hasn't been saved yet. If you proceed, all your current text inputs will be lost.\n\nClear form and edit the selected account?"
+          );
+          if (!proceed) {
+            return;
+          }
+        }
+        setAccountFormMode("edit", record);
+      }
+
+      function buildTableHeader() {
+        const headerRow = document.createElement("tr");
+        columns.forEach((column) => {
+          const th = document.createElement("th");
+          th.textContent = column.label;
+          headerRow.appendChild(th);
+        });
+        const statusTh = document.createElement("th");
+        statusTh.textContent = "Status";
+        headerRow.appendChild(statusTh);
+        const actionsTh = document.createElement("th");
+        actionsTh.textContent = "Actions";
+        headerRow.appendChild(actionsTh);
+        tableHead.innerHTML = "";
+        tableHead.appendChild(headerRow);
+      }
+
+      function buildAccountsTableHeader() {
+        const headerRow = document.createElement("tr");
+        accountColumns
+          .filter((column) => !column.formOnly)
+          .forEach((column) => {
+            const th = document.createElement("th");
+            th.textContent = column.label;
+            headerRow.appendChild(th);
+          });
+        const actionsTh = document.createElement("th");
+        actionsTh.textContent = "Actions";
+        headerRow.appendChild(actionsTh);
+        accountsTableHead.innerHTML = "";
+        accountsTableHead.appendChild(headerRow);
+      }
+
+      function getFilterMode(columnKey) {
+        if (numericRanges[columnKey]) return "range";
+        if (columnKey === "Sex") return "select";
+        return "text";
+      }
+
+      function getAccountFilterMode(columnKey) {
+        if (columnKey === "Status" || columnKey === "Type") return "select";
+        return "text";
+      }
+
+      function updateSearchControls() {
+        const columnKey = searchColumn.value;
+        const mode = getFilterMode(columnKey);
+        searchInputGroup.style.display = mode === "text" ? "block" : "none";
+        searchSelectGroup.style.display = mode === "select" ? "block" : "none";
+        searchRangeGroup.style.display = mode === "range" ? "block" : "none";
+        if (mode === "select") {
+          const values = Array.from(
+            new Set(records.map((record) => record[columnKey]).filter(Boolean))
+          ).sort((a, b) => `${a}`.localeCompare(`${b}`));
+          searchSelect.innerHTML = "";
+          const defaultOption = document.createElement("option");
+          defaultOption.value = "";
+          defaultOption.textContent = "All";
+          searchSelect.appendChild(defaultOption);
+          values.forEach((value) => {
+            const option = document.createElement("option");
+            option.value = value;
+            option.textContent = value;
+            searchSelect.appendChild(option);
+          });
+        }
+        if (mode === "range") {
+          const ranges = numericRanges[columnKey] || [];
+          searchRange.innerHTML = "";
+          const defaultOption = document.createElement("option");
+          defaultOption.value = "";
+          defaultOption.textContent = "All";
+          searchRange.appendChild(defaultOption);
+          ranges.forEach((range) => {
+            const option = document.createElement("option");
+            option.value = `${range.min ?? ""}:${range.max ?? ""}`;
+            option.textContent = range.label;
+            searchRange.appendChild(option);
+          });
+        }
+      }
+
+      function updateAccountSearchControls() {
+        const columnKey = accountSearchColumn.value;
+        const mode = getAccountFilterMode(columnKey);
+        accountSearchInputGroup.style.display = mode === "text" ? "block" : "none";
+        accountSearchSelectGroup.style.display = mode === "select" ? "block" : "none";
+        if (mode === "select") {
+          const preset = accountColumns.find((column) => column.key === columnKey);
+          const values = preset?.options?.length
+            ? preset.options
+            : Array.from(
+                new Set(
+                  accountRecords.map((record) => record[columnKey]).filter(Boolean)
+                )
+              ).sort((a, b) => `${a}`.localeCompare(`${b}`));
+          accountSearchSelect.innerHTML = "";
+          const defaultOption = document.createElement("option");
+          defaultOption.value = "";
+          defaultOption.textContent = "All";
+          accountSearchSelect.appendChild(defaultOption);
+          values.forEach((value) => {
+            const option = document.createElement("option");
+            option.value = value;
+            option.textContent = value;
+            accountSearchSelect.appendChild(option);
+          });
+        }
+      }
+
+      function updateSortControls() {
+        const columnKey = sortColumn.value;
+        if (columnKey === "Sex") {
+          sortOrderLabel.textContent = "Sex Order";
+          sortOrder.innerHTML = "";
+          const optionA = document.createElement("option");
+          optionA.value = "asc";
+          optionA.textContent = "M then F";
+          const optionB = document.createElement("option");
+          optionB.value = "desc";
+          optionB.textContent = "F then M";
+          sortOrder.appendChild(optionA);
+          sortOrder.appendChild(optionB);
+        } else {
+          sortOrderLabel.textContent = "Order";
+          sortOrder.innerHTML = "";
+          const optionA = document.createElement("option");
+          optionA.value = "asc";
+          optionA.textContent = "Ascending";
+          const optionB = document.createElement("option");
+          optionB.value = "desc";
+          optionB.textContent = "Descending";
+          sortOrder.appendChild(optionA);
+          sortOrder.appendChild(optionB);
+        }
+      }
+
+      function renderTable() {
+        tableBody.innerHTML = "";
+        records.forEach((record) => {
+          const row = document.createElement("tr");
+          const isDisabled =
+            `${record.Status ?? "enabled"}`.toLowerCase() === "disabled";
+          if (isDisabled) row.classList.add("disabled-row");
+          columns.forEach((column) => {
+            const td = document.createElement("td");
+            let value = record[column.key];
+            if (column.key === "DateOfBirth" && typeof value === "string") {
+              value = value.slice(0, 10);
+            }
+            td.textContent = value ?? "";
+            row.appendChild(td);
+          });
+          const statusTd = document.createElement("td");
+          statusTd.innerHTML = isDisabled
+            ? '<span class="badge disabled">Disabled</span>'
+            : '<span class="badge active">Enabled</span>';
+          row.appendChild(statusTd);
+          const actionTd = document.createElement("td");
+          actionTd.className = "actions";
+          const editButton = document.createElement("button");
+          editButton.type = "button";
+          editButton.className = isDisabled ? "ghost disabled" : "ghost";
+          editButton.textContent = "Edit";
+          editButton.disabled = isDisabled;
+          if (!isDisabled) {
+            editButton.addEventListener("click", () => {
+              handleRecordEditClick(record);
+            });
+          }
+          actionTd.appendChild(editButton);
+          const disableButton = document.createElement("button");
+          disableButton.type = "button";
+          disableButton.className = isDisabled ? "danger disabled" : "danger";
+          disableButton.textContent = "Disable";
+          disableButton.disabled = isDisabled;
+          if (!isDisabled) {
+            disableButton.addEventListener("click", async () => {
+              await fetch(`/api/records/${record.ID}/disable`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  _actor_id: localStorage.getItem("accountId"),
+                  _actor_type: localStorage.getItem("userType"),
+                }),
+              });
+              await loadRecords();
+            });
+          }
+          actionTd.appendChild(disableButton);
+          row.appendChild(actionTd);
+          tableBody.appendChild(row);
+        });
+      }
+
+      function renderAccountsTable() {
+        accountsTableBody.innerHTML = "";
+        accountRecords.forEach((record) => {
+          if (record.Type === "Admin") {
+            return;
+          }
+          const row = document.createElement("tr");
+          const isDisabled =
+            `${record.Status ?? "Enabled"}`.toLowerCase() === "disabled";
+          if (isDisabled) row.classList.add("disabled-row");
+          accountColumns
+            .filter((column) => !column.formOnly)
+            .forEach((column) => {
+              const td = document.createElement("td");
+              td.textContent = record[column.key] ?? "";
+              row.appendChild(td);
+            });
+          const actionTd = document.createElement("td");
+          actionTd.className = "actions";
+          const editButton = document.createElement("button");
+          editButton.type = "button";
+          editButton.className = isDisabled ? "ghost disabled" : "ghost";
+          editButton.textContent = "Edit";
+          editButton.disabled = isDisabled;
+          if (!isDisabled) {
+            editButton.addEventListener("click", () => {
+              handleAccountEditClick(record);
+            });
+          }
+          actionTd.appendChild(editButton);
+          const disableButton = document.createElement("button");
+          disableButton.type = "button";
+          disableButton.className = isDisabled ? "danger disabled" : "danger";
+          disableButton.textContent = "Disable";
+          disableButton.disabled = isDisabled;
+          if (!isDisabled) {
+            disableButton.addEventListener("click", async () => {
+              await fetch(`/api/accounts/${record.AccountID}/disable`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  _actor_id: localStorage.getItem("accountId"),
+                  _actor_type: localStorage.getItem("userType"),
+                }),
+              });
+              await loadAccounts();
+            });
+          }
+          actionTd.appendChild(disableButton);
+          row.appendChild(actionTd);
+          accountsTableBody.appendChild(row);
+        });
+      }
+
+      function renderActivityTable() {
+        if (!activityTableBody) return;
+        activityTableBody.innerHTML = "";
+        activityRecords.forEach((activity) => {
+          const row = document.createElement("tr");
+          const cells = [
+            activity.ActivityTime,
+            activity.TargetID,
+            activity.ActorAccountID,
+            activity.ActorType,
+            activity.ActivityType,
+          ];
+          cells.forEach((value) => {
+            const td = document.createElement("td");
+            td.textContent = value ?? "";
+            row.appendChild(td);
+          });
+          activityTableBody.appendChild(row);
+        });
+      }
+
+      function renderTextMetricSummary(data) {
+        if (!textMetricSummary) return;
+        textMetricSummary.innerHTML = "";
+        if (!data.labels.length) return;
+        
+        // Create array of label-value pairs and sort by value (descending)
+        const pairs = data.labels.map((label, index) => ({
+          label,
+          value: data.values[index]
+        })).sort((a, b) => b.value - a.value);
+        
+        const max = Math.max(...data.values);
+        textMetricSummary.className = "metric-summary";
+        
+        // Display sorted pairs (highest values first) with improved formatting
+        pairs.forEach((pair, index) => {
+          const item = document.createElement("span");
+          item.className = "metric-summary-item";
+          if (pair.value === max) {
+            item.classList.add("highlight");
+          }
+          
+          // Improved formatting with better visual separation
+          item.innerHTML = `
+            <span class="metric-label">${pair.label}</span>
+            <span class="metric-separator">→</span>
+            <span class="metric-value">${pair.value}</span>
+          `;
+          
+          textMetricSummary.appendChild(item);
+        });
+      }
+
+      function renderNumberMetricSummary(data) {
+        if (!numberMetricSummary) return;
+        numberMetricSummary.innerHTML = "";
+        if (!data.labels.length) return;
+        
+        // Create array of label-value pairs and sort by value (descending)
+        const pairs = data.labels.map((label, index) => ({
+          label,
+          value: data.values[index]
+        })).sort((a, b) => b.value - a.value);
+        
+        const max = Math.max(...data.values);
+        numberMetricSummary.className = "metric-summary";
+        
+        // Display sorted pairs (highest values first) with improved formatting
+        pairs.forEach((pair, index) => {
+          const item = document.createElement("span");
+          item.className = "metric-summary-item";
+          if (pair.value === max) {
+            item.classList.add("highlight");
+          }
+          
+          // Improved formatting with better visual separation
+          item.innerHTML = `
+            <span class="metric-label">${pair.label}</span>
+            <span class="metric-separator">→</span>
+            <span class="metric-value">${pair.value}</span>
+          `;
+          
+          numberMetricSummary.appendChild(item);
+        });
+      }
+
+      function updateStats() {
+        const total = globalStats.total ?? 0;
+        const disabled = globalStats.disabled ?? 0;
+        const active = total - disabled;
+        
+        // Update analytics stats
+        if (analyticsTotalCount) analyticsTotalCount.textContent = total;
+        if (analyticsActiveCount) analyticsActiveCount.textContent = active;
+        if (analyticsDisabledCount) analyticsDisabledCount.textContent = disabled;
+      }
+
+      function updateCharts() {
+        updateTextChart();
+        updateNumberChart();
+        updateGovernmentCharts();
+      }
+
+      function getTextMetricData(metricKey) {
+        const counts = {};
+        const baseRecords =
+          analyticsRecords && analyticsRecords.length ? analyticsRecords : records;
+        const sourceRecords = baseRecords.filter(
+          (record) => (record.Status || "").toLowerCase() !== "disabled"
+        );
+        sourceRecords.forEach((record) => {
+          const value = record[metricKey] || "Unknown";
+          counts[value] = (counts[value] || 0) + 1;
+        });
+        return {
+          labels: Object.keys(counts),
+          values: Object.values(counts),
+        };
+      }
+
+      function getNumberMetricData(metricKey) {
+        const ranges = numericRanges[metricKey] || [];
+        const labels = ranges.map((range) => range.label);
+        const values = ranges.map(() => 0);
+        const baseRecords =
+          analyticsRecords && analyticsRecords.length ? analyticsRecords : records;
+        const sourceRecords = baseRecords.filter(
+          (record) => (record.Status || "").toLowerCase() !== "disabled"
+        );
+        sourceRecords.forEach((record) => {
+          const value = Number(record[metricKey] ?? 0);
+          ranges.forEach((range, index) => {
+            const withinMin = range.min === undefined || value >= range.min;
+            const withinMax = range.max === undefined || value <= range.max;
+            if (withinMin && withinMax) {
+              values[index] += 1;
+            }
+          });
+        });
+        return { labels, values };
+      }
+
+      function updateTextChart() {
+        const metricKey = textMetricSelect.value;
+        const chartType = textChartType.value;
+        const data = getTextMetricData(metricKey);
+        
+        // Sort data by value (descending) to show highest values first
+        const sortedData = data.labels.map((label, index) => ({
+          label,
+          value: data.values[index]
+        })).sort((a, b) => b.value - a.value);
+        
+        const chartData = {
+          labels: sortedData.map(item => item.label),
+          datasets: [
+            {
+              label: "Count",
+              data: sortedData.map(item => item.value),
+              backgroundColor: [
+                "#0f172a", // Darkest color for highest values
+                "#64748b",
+                "#0ea5e9",
+                "#38bdf8",
+                "#94a3b8",
+                "#22c55e",
+                "#f97316",
+                "#e11d48",
+              ],
+            },
+          ],
+        };
+        renderTextMetricSummary(data);
+        if (textChart) {
+          textChart.destroy();
+        }
+        textChart = new Chart(document.getElementById("textChart"), {
+          type: chartType,
+          data: chartData,
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { position: "bottom" },
+            },
+          },
+        });
+      }
+
+      function updateNumberChart() {
+        const metricKey = numberMetricSelect.value;
+        const chartType = numberChartType.value;
+        const data = getNumberMetricData(metricKey);
+        
+        // Sort data by value (descending) to show highest values first
+        const sortedData = data.labels.map((label, index) => ({
+          label,
+          value: data.values[index]
+        })).sort((a, b) => b.value - a.value);
+        
+        const chartData = {
+          labels: sortedData.map(item => item.label),
+          datasets: [
+            {
+              label: "Count",
+              data: sortedData.map(item => item.value),
+              borderColor: "#0f172a", // Darkest color for highest values
+              backgroundColor: "rgba(15, 23, 42, 0.15)",
+              fill: chartType === "line",
+            },
+          ],
+        };
+        renderNumberMetricSummary(data);
+        if (numberChart) {
+          numberChart.destroy();
+        }
+        numberChart = new Chart(document.getElementById("numberChart"), {
+          type: chartType,
+          data: chartData,
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { position: "bottom" },
+            },
+          },
+        });
+      }
+
+      async function loadRecords() {
+        const query = new URLSearchParams({
+          page: pagination.page,
+          page_size: pagination.pageSize,
+          sort_column: sortColumn.value,
+          sort_order: sortOrder.value,
+        });
+        const columnKey = searchColumn.value;
+        const mode = getFilterMode(columnKey);
+        let searchValue = "";
+        if (mode === "text") {
+          searchValue = searchInput.value.trim();
+        } else if (mode === "select") {
+          searchValue = searchSelect.value;
+        } else if (mode === "range") {
+          searchValue = searchRange.value;
+        }
+        if (searchValue) {
+          query.set("search_column", columnKey);
+          query.set("search_mode", mode);
+          query.set("search_value", searchValue);
+        }
+        const response = await fetch(`/api/records?${query.toString()}`);
+        const data = await response.json();
+        records = data.items || [];
+        pagination = {
+          page: data.page ?? pagination.page,
+          pageSize: data.page_size ?? pagination.pageSize,
+          total: data.total ?? records.length,
+          disabledTotal: data.disabled_total ?? pagination.disabledTotal,
+        };
+        await loadGlobalStats();
+        updateSearchControls();
+        renderTable();
+        if (analyticsScope) {
+          if (analyticsScope.value === "page") {
+            analyticsRecords = records.filter(
+              (record) => (record.Status || "").toLowerCase() !== "disabled"
+            );
+            updateCharts();
+          } else {
+            await refreshAnalyticsRecords();
+          }
+        } else {
+          updateCharts();
+        }
+        updatePaginationControls();
+      }
+
+      async function loadGlobalStats() {
+        try {
+          const response = await fetch("/api/stats");
+          const data = await response.json();
+          globalStats = data;
+          updateStats();
+        } catch (error) {
+          globalStats = { total: 0, disabled: 0 };
+          updateStats();
+        }
+      }
+
+      async function refreshAnalyticsRecords() {
+        if (!analyticsScope) return;
+        const scope = analyticsScope.value;
+        if (scope === "page") {
+          analyticsRecords = records.filter(
+            (record) => (record.Status || "").toLowerCase() !== "disabled"
+          );
+          updateCharts();
+          return;
+        }
+        const query = new URLSearchParams({ scope, include_disabled: "false" });
+        if (scope === "filtered") {
+          const columnKey = searchColumn.value;
+          const mode = getFilterMode(columnKey);
+          let searchValue = "";
+          if (mode === "text") {
+            searchValue = searchInput.value.trim();
+          } else if (mode === "select") {
+            searchValue = searchSelect.value;
+          } else if (mode === "range") {
+            searchValue = searchRange.value;
+          }
+          if (searchValue) {
+            query.set("search_column", columnKey);
+            query.set("search_mode", mode);
+            query.set("search_value", searchValue);
+          }
+        }
+        const response = await fetch(`/api/records/analytics?${query.toString()}`);
+        const data = await response.json();
+        analyticsRecords = data.items || [];
+        updateCharts();
+      }
+
+      async function loadAccounts() {
+        const query = new URLSearchParams({
+          page: accountPagination.page,
+          page_size: accountPagination.pageSize,
+          sort_column: accountSortColumn.value,
+          sort_order: accountSortOrder.value,
+        });
+        const columnKey = accountSearchColumn.value;
+        const mode = getAccountFilterMode(columnKey);
+        let searchValue = "";
+        if (mode === "text") {
+          searchValue = accountSearchInput.value.trim();
+        } else if (mode === "select") {
+          searchValue = accountSearchSelect.value;
+        }
+        if (searchValue) {
+          query.set("search_column", columnKey);
+          query.set("search_mode", mode);
+          query.set("search_value", searchValue);
+        }
+        const response = await fetch(`/api/accounts?${query.toString()}`);
+        const data = await response.json();
+        accountRecords = data.items || [];
+        accountPagination = {
+          page: data.page ?? accountPagination.page,
+          pageSize: data.page_size ?? accountPagination.pageSize,
+          total: data.total ?? accountRecords.length,
+        };
+        updateAccountSearchControls();
+        renderAccountsTable();
+        updateAccountPaginationControls();
+      }
+
+      async function loadActivity() {
+        const response = await fetch(`/api/activity?page=${activityPagination.page}&pageSize=${activityPagination.pageSize}`);
+        const data = await response.json();
+        activityRecords = data.items || [];
+        activityPagination.total = data.total || 0;
+        renderActivityTable();
+        updateActivityPaginationControls();
+      }
+
+      function updatePaginationControls() {
+        const totalPages = Math.max(
+          1,
+          Math.ceil((pagination.total || 0) / pagination.pageSize)
+        );
+        pageInfo.textContent = `Page ${pagination.page} of ${totalPages}`;
+        prevPage.disabled = pagination.page <= 1;
+        nextPage.disabled = pagination.page >= totalPages;
+      }
+
+      function updateAccountPaginationControls() {
+        const totalPages = Math.max(
+          1,
+          Math.ceil((accountPagination.total || 0) / accountPagination.pageSize)
+        );
+        accountPageInfo.textContent = `Page ${accountPagination.page} of ${totalPages}`;
+        accountPrevPage.disabled = accountPagination.page <= 1;
+        accountNextPage.disabled = accountPagination.page >= totalPages;
+      }
+
+      function updateActivityPaginationControls() {
+        const totalPages = Math.max(
+          1,
+          Math.ceil((activityPagination.total || 0) / activityPagination.pageSize)
+        );
+        activityPageInfo.textContent = `Page ${activityPagination.page} of ${totalPages}`;
+        activityPrevPage.disabled = activityPagination.page <= 1;
+        activityNextPage.disabled = activityPagination.page >= totalPages;
+      }
+
+      function populateSelects() {
+        searchColumn.innerHTML = "";
+        sortColumn.innerHTML = "";
+        columns.forEach((column) => {
+          const option = document.createElement("option");
+          option.value = column.key;
+          option.textContent = column.label;
+          searchColumn.appendChild(option);
+          const sortOption = document.createElement("option");
+          sortOption.value = column.key;
+          sortOption.textContent = column.label;
+          sortColumn.appendChild(sortOption);
+        });
+        textMetricSelect.innerHTML = "";
+        textMetrics.forEach((metric) => {
+          const option = document.createElement("option");
+          option.value = metric.key;
+          option.textContent = metric.label;
+          textMetricSelect.appendChild(option);
+        });
+        numberMetricSelect.innerHTML = "";
+        numberMetrics.forEach((metric) => {
+          const option = document.createElement("option");
+          option.value = metric.key;
+          option.textContent = metric.label;
+          numberMetricSelect.appendChild(option);
+        });
+        searchColumn.value = "LastName";
+        sortColumn.value = "ID";
+      }
+
+      function populateAccountSelects() {
+        accountSearchColumn.innerHTML = "";
+        accountSortColumn.innerHTML = "";
+        accountColumns
+          .filter((column) => !column.formOnly)
+          .forEach((column) => {
+            const option = document.createElement("option");
+            option.value = column.key;
+            option.textContent = column.label;
+            accountSearchColumn.appendChild(option);
+            const sortOption = document.createElement("option");
+            sortOption.value = column.key;
+            sortOption.textContent = column.label;
+            accountSortColumn.appendChild(sortOption);
+          });
+        accountSearchColumn.value = "Email";
+        accountSortColumn.value = "AccountID";
+      }
+
+      function enforceLogin() {
+        const userType = localStorage.getItem("userType");
+        if (!userType) {
+          window.location.href = "/login";
+          return null;
+        }
+        const censusSections = document.querySelectorAll(
+          '[data-section="census"]'
+        );
+        if (userType === "Admin") {
+          censusSections.forEach((section) => (section.style.display = "none"));
+          accountSection.style.display = "block";
+        } else {
+          accountSection.style.display = "none";
+        }
+        return userType;
+      }
+
+      function handleLogout() {
+        localStorage.removeItem("userType");
+        localStorage.removeItem("username");
+        localStorage.removeItem("accountId");
+        window.location.href = "/login";
+      }
+
+      recordForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const payload = getFormData();
+        payload._actor_id = localStorage.getItem("accountId");
+        payload._actor_type = localStorage.getItem("userType");
+        if (formMode === "add") {
+          await fetch("/api/records", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+        } else {
+          await fetch(`/api/records/${payload.ID}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+        }
+        setFormMode("add");
+        await loadRecords();
+        // Explicitly update government charts after data changes
+        setTimeout(() => {
+          console.log("Explicitly updating government charts after data change...");
+          updateGovernmentCharts();
+        }, 500); // Small delay to ensure data is loaded
+      });
+
+      accountForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const payload = getAccountFormData();
+        const emailInput = document.getElementById("account_Email");
+        if (emailInput && !emailInput.reportValidity()) {
+          return;
+        }
+        const passwordValue = payload.Password || "";
+        if (accountFormMode === "add" || passwordValue) {
+          if (passwordValue.length < 8) {
+            alert("Password must be at least 8 characters long.");
+            return;
+          }
+          const strengthElement = document.getElementById("accountPasswordStrength");
+          const score = evaluatePasswordStrength(passwordValue, strengthElement);
+          // Accept only Good (2) or Best (3)
+          if (score === null || score < 2) {
+            alert("Password must have strength Good or Best.");
+            return;
+          }
+        }
+        let body = {
+          Email: payload.Email,
+          Username: payload.Username,
+          Password: payload.Password,
+        };
+        if (accountFormMode === "add") {
+          body = {
+            ...body,
+            Status: "Enabled",
+            Type: "Officer",
+          };
+          body._actor_id = localStorage.getItem("accountId");
+          body._actor_type = localStorage.getItem("userType");
+          const response = await fetch("/api/accounts", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+          });
+          if (!response.ok) {
+            const data = await response.json();
+            alert(data.error || "Unable to create account");
+            return;
+          }
+        } else {
+          body = {
+            ...body,
+            Status: payload.Status,
+            Type: payload.Type,
+          };
+          body._actor_id = localStorage.getItem("accountId");
+          body._actor_type = localStorage.getItem("userType");
+          const response = await fetch(`/api/accounts/${payload.AccountID}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+          });
+          if (!response.ok) {
+            const data = await response.json();
+            alert(data.error || "Unable to update account");
+            return;
+          }
+        }
+        setAccountFormMode("add");
+        await loadAccounts();
+      });
+
+      resetButton.addEventListener("click", () => {
+        setFormMode("add");
+      });
+
+      accountResetButton.addEventListener("click", () => {
+        setAccountFormMode("add");
+      });
+
+      if (logoutButton) {
+        logoutButton.addEventListener("click", handleLogout);
+      }
+
+
+
+      searchColumn.addEventListener("change", () => {
+        updateSearchControls();
+        if (searchInput) searchInput.value = "";
+        if (searchSelect) searchSelect.value = "";
+        if (searchRange) searchRange.value = "";
+      });
+
+      searchButton.addEventListener("click", async () => {
+        pagination.page = 1;
+        await loadRecords();
+      });
+      clearButton.addEventListener("click", async () => {
+        searchInput.value = "";
+        searchSelect.value = "";
+        searchRange.value = "";
+        pagination.page = 1;
+        await loadRecords();
+      });
+
+      sortColumn.addEventListener("change", () => {
+        updateSortControls();
+        pagination.page = 1;
+        loadRecords();
+      });
+
+      sortOrder.addEventListener("change", () => {
+        pagination.page = 1;
+        loadRecords();
+      });
+
+      accountSearchColumn.addEventListener("change", () => {
+        updateAccountSearchControls();
+        accountSearchInput.value = "";
+        accountSearchSelect.value = "";
+      });
+
+      accountSearchButton.addEventListener("click", async () => {
+        accountPagination.page = 1;
+        await loadAccounts();
+      });
+
+      accountClearButton.addEventListener("click", async () => {
+        accountSearchInput.value = "";
+        accountSearchSelect.value = "";
+        accountPagination.page = 1;
+        await loadAccounts();
+      });
+
+      accountSortColumn.addEventListener("change", () => {
+        accountPagination.page = 1;
+        loadAccounts();
+      });
+
+      accountSortOrder.addEventListener("change", () => {
+        accountPagination.page = 1;
+        loadAccounts();
+      });
+      if (analyticsScope) {
+        analyticsScope.addEventListener("change", () => {
+          refreshAnalyticsRecords();
+        });
+      }
+      accountPrevPage.addEventListener("click", async () => {
+        if (accountPagination.page > 1) {
+          accountPagination.page -= 1;
+          await loadAccounts();
+        }
+      });
+      accountNextPage.addEventListener("click", async () => {
+        const totalPages = Math.max(
+          1,
+          Math.ceil((accountPagination.total || 0) / accountPagination.pageSize)
+        );
+        if (accountPagination.page < totalPages) {
+          accountPagination.page += 1;
+          await loadAccounts();
+        }
+      });
+      textMetricSelect.addEventListener("change", updateTextChart);
+      textChartType.addEventListener("change", updateTextChart);
+      numberMetricSelect.addEventListener("change", updateNumberChart);
+      numberChartType.addEventListener("change", updateNumberChart);
+      prevPage.addEventListener("click", async () => {
+        if (pagination.page > 1) {
+          pagination.page -= 1;
+          await loadRecords();
+        }
+      });
+      nextPage.addEventListener("click", async () => {
+        const totalPages = Math.max(
+          1,
+          Math.ceil((pagination.total || 0) / pagination.pageSize)
+        );
+        if (pagination.page < totalPages) {
+          pagination.page += 1;
+          await loadRecords();
+        }
+      });
+
+      activityPrevPage.addEventListener("click", async () => {
+        if (activityPagination.page > 1) {
+          activityPagination.page -= 1;
+          await loadActivity();
+        }
+      });
+      activityNextPage.addEventListener("click", async () => {
+        const totalPages = Math.max(
+          1,
+          Math.ceil((activityPagination.total || 0) / activityPagination.pageSize)
+        );
+        if (activityPagination.page < totalPages) {
+          activityPagination.page += 1;
+          await loadActivity();
+        }
+      });
+
+      buildFormFields();
+      buildTableHeader();
+      buildAccountFormFields();
+      buildAccountsTableHeader();
+      populateSelects();
+      populateAccountSelects();
+      updateSortControls();
+      updateSearchControls();
+      updateAccountSearchControls();
+      setFormMode("add");
+      setAccountFormMode("add");
+      const activeUserType = enforceLogin();
+      if (activeUserType === "Admin") {
+        loadAccounts();
+        loadActivity();
+      }
+      if (activeUserType) {
+        loadRecords();
+      }
+      
+      // Initialize government chart selector
+      initializeGovernmentChartSelector();
+    </script>
+  </body>
+</html>

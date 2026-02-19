@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Login</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body class="d-flex align-items-center justify-content-center min-vh-100">
+    <div class="page container-xxl">
+      <section class="panel" style="max-width: 420px; margin: 0 auto;">
+        <div class="panel-header">
+          <h2>Login</h2>
+          <span class="muted">Use your email or username</span>
+        </div>
+        <form id="loginForm" class="form">
+          <div class="form-grid">
+            <div class="field">
+              <label for="identifier">Email or Username</label>
+              <input type="text" id="identifier" required />
+            </div>
+            <div class="field">
+              <label for="password">Password</label>
+              <input type="password" id="password" required />
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="primary">Login</button>
+          </div>
+          <div class="muted" id="loginError"></div>
+        </form>
+      </section>
+    </div>
+    <div
+      class="modal fade"
+      id="lockoutModal"
+      tabindex="-1"
+      aria-labelledby="lockoutTitle"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="lockoutTitle">Login Locked</h5>
+          </div>
+          <div class="modal-body">
+            Try again in <span id="lockoutTimer">10</span> seconds.
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      const loginForm = document.getElementById("loginForm");
+      const loginError = document.getElementById("loginError");
+      const identifier = document.getElementById("identifier");
+      const password = document.getElementById("password");
+      const lockoutModalElement = document.getElementById("lockoutModal");
+      const lockoutTimer = document.getElementById("lockoutTimer");
+      const lockoutModal = new bootstrap.Modal(lockoutModalElement, {
+        backdrop: "static",
+        keyboard: false,
+      });
+      let lockoutInterval = null;
+
+      if (localStorage.getItem("userType")) {
+        window.location.href = "/";
+      }
+
+      function getLockoutUntil() {
+        const value = localStorage.getItem("lockoutUntil");
+        return value ? Number(value) : 0;
+      }
+
+      function setLockoutUntil(timestamp) {
+        localStorage.setItem("lockoutUntil", String(timestamp));
+      }
+
+      function getFailedAttempts() {
+        const value = localStorage.getItem("loginAttempts");
+        return value ? Number(value) : 0;
+      }
+
+      function setFailedAttempts(count) {
+        localStorage.setItem("loginAttempts", String(count));
+      }
+
+      function clearLockout() {
+        localStorage.removeItem("lockoutUntil");
+        setFailedAttempts(0);
+        if (lockoutInterval) {
+          clearInterval(lockoutInterval);
+          lockoutInterval = null;
+        }
+        lockoutModal.hide();
+      }
+
+      function showLockout() {
+        const updateTimer = () => {
+          const remaining = Math.max(
+            0,
+            Math.ceil((getLockoutUntil() - Date.now()) / 1000)
+          );
+          lockoutTimer.textContent = remaining;
+          if (remaining <= 0) {
+            clearLockout();
+          }
+        };
+        updateTimer();
+        if (!lockoutInterval) {
+          lockoutInterval = setInterval(updateTimer, 500);
+        }
+        lockoutModal.show();
+      }
+
+      if (getLockoutUntil() > Date.now()) {
+        showLockout();
+      }
+
+      loginForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        loginError.textContent = "";
+        if (getLockoutUntil() > Date.now()) {
+          showLockout();
+          return;
+        }
+        const response = await fetch("/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            identifier: identifier.value.trim(),
+            password: password.value,
+          }),
+        });
+        const data = await response.json();
+        if (!response.ok) {
+          const attempts = getFailedAttempts() + 1;
+          setFailedAttempts(attempts);
+          if (attempts >= 3) {
+            setLockoutUntil(Date.now() + 10000);
+            showLockout();
+            return;
+          }
+          loginError.textContent = data.error || "Login failed";
+          return;
+        }
+        clearLockout();
+        localStorage.setItem("userType", data.Type);
+        localStorage.setItem("username", data.Username || "");
+        localStorage.setItem("accountId", data.AccountID || "");
+        window.location.href = "/";
+      });
+    </script>
+  </body>
+</html>

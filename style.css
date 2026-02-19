@@ -1,0 +1,685 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Government Planning Insights Styles */
+#governmentAnalytics {
+  margin-top: 24px;
+}
+
+.government-metric-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: none;
+  margin-bottom: 16px;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+
+
+.metric-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.metric-card-header h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #374151;
+  margin: 0;
+}
+
+.metric-card-value {
+  font-size: 20px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.metric-card-chart {
+  height: 200px;
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.metric-card-summary {
+  background: #ffffff;
+  border-radius: 6px;
+  padding: 12px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.metric-insight {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #374151;
+  margin: 0;
+}
+
+.metric-insight p {
+  margin: 0;
+}
+
+/* Responsive adjustments */
+@media (min-width: 992px) {
+  .government-metrics-grid .col-lg-6 {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+}
+
+@media (max-width: 768px) {
+  .government-metric-card {
+    padding: 16px;
+  }
+  
+  .metric-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .metric-card-value {
+    font-size: 18px;
+  }
+}
+
+/* Responsive adjustments for government chart selector */
+@media (max-width: 768px) {
+  #governmentAnalytics .panel-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .government-chart-selector {
+    margin-left: 0;
+    width: 100%;
+  }
+  
+  .government-chart-selector .form-select {
+    min-width: 100%;
+    font-size: 16px;
+    padding: 14px 16px;
+  }
+}
+  
+  .metric-card-chart {
+    height: 180px;
+  }
+
+
+/* Chart specific styling */
+#dependencyRatioChart {
+  max-height: 200px;
+}
+
+#vulnerabilityChart {
+  max-height: 200px;
+}
+
+#mismatchChart {
+  max-height: 200px;
+}
+
+/* Color coding for different metrics */
+.dependency-ratio-low {
+  color: #059669 !important;
+}
+
+.dependency-ratio-moderate {
+  color: #d97706 !important;
+}
+
+.dependency-ratio-high {
+  color: #dc2626 !important;
+}
+
+/* Vulnerability priority colors */
+.vulnerability-highest {
+  color: #dc2626 !important;
+}
+
+.vulnerability-high {
+  color: #ea580c !important;
+}
+
+.vulnerability-moderate {
+  color: #ca8a04 !important;
+}
+
+.vulnerability-none {
+  color: #6b7280 !important;
+}
+
+/* Education-Income Mismatch colors */
+.mismatch-low {
+  color: #059669 !important;
+}
+
+.mismatch-moderate {
+  color: #d97706 !important;
+}
+
+.mismatch-high {
+  color: #dc2626 !important;
+}
+
+/* Household Density Chart */
+#densityChart {
+  max-height: 200px;
+}
+
+/* Household Density color coding */
+.density-low {
+  color: #059669 !important;
+}
+
+.density-moderate {
+  color: #d97706 !important;
+}
+
+.density-high {
+  color: #dc2626 !important;
+}
+
+/* Voter Registration Gap Chart */
+#voterGapChart {
+  max-height: 200px;
+}
+
+/* Voter Registration Gap color coding */
+.voter-gap-low {
+  color: #059669 !important;
+}
+
+.voter-gap-moderate {
+  color: #d97706 !important;
+}
+
+.voter-gap-high {
+  color: #dc2626 !important;
+}
+
+/* Bootstrap grid clearfix for government metrics */
+.government-metrics-grid {
+  box-sizing: border-box;
+}
+
+.government-metrics-grid::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* Ensure Bootstrap grid works properly for government metrics */
+.government-metrics-grid.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: -15px;
+  margin-left: -15px;
+}
+
+.government-metrics-grid .col-lg-6 {
+  position: relative;
+  width: 100%;
+  padding-right: 15px;
+  padding-left: 15px;
+}
+
+/* Ensure proper spacing in the analytics section */
+#governmentAnalytics .panel-header {
+  margin-bottom: 24px;
+}
+
+#governmentAnalytics .panel-header h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 4px 0;
+}
+
+#governmentAnalytics .panel-header .muted {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+/* Government Chart Selector Styling */
+.government-chart-selector {
+  margin-left: auto;
+}
+
+.government-chart-selector .form-select {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+  background-color: #ffffff;
+  border: 2px solid #d1d5db;
+  border-radius: 12px;
+  padding: 16px 20px;
+  min-width: 280px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.government-chart-selector .form-select:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  outline: none;
+}
+
+.government-chart-selector .form-select:hover {
+  border-color: #9ca3af;
+}
+
+/* Chart visibility control */
+.government-chart-card {
+  display: none;
+}
+
+.government-chart-card.active {
+  display: block;
+}
+
+body {
+  font-family: "Inter", "Segoe UI", sans-serif;
+  background: #f8fafc;
+  color: #0f172a;
+  line-height: 1.5;
+}
+
+.page {
+  max-width: 1400px;
+  margin: 24px auto 40px;
+  padding: 0 16px;
+}
+
+.hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.hero h1 {
+  font-size: 28px;
+  margin-bottom: 4px;
+}
+
+.hero p {
+  color: #64748b;
+}
+
+.hero-stats {
+  display: flex;
+  gap: 16px;
+}
+
+.stat {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 12px 16px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+  min-width: 160px;
+}
+
+.stat-label {
+  color: #64748b;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: 600;
+  margin-top: 6px;
+  display: block;
+}
+
+/* Analytics stats specific styling */
+.analytics-stats .stat {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 8px 12px;
+  min-width: 120px;
+  text-align: center;
+}
+
+.analytics-stats .stat-label {
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.analytics-stats .stat-value {
+  font-size: 18px;
+  margin-top: 2px;
+}
+
+/* Color classes for stats */
+.text-success {
+  color: #059669;
+}
+
+.text-danger {
+  color: #dc2626;
+}
+
+.text-primary {
+  color: #2563eb;
+}
+
+.layout {
+  display: block;
+}
+
+.panel {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 20px 24px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 16px;
+}
+
+.panel-header h2 {
+  font-size: 20px;
+}
+
+.muted {
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-grid {
+  display: grid;
+  gap: 12px 16px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.field label {
+  font-size: 12px;
+  color: #475569;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.field input,
+.field select {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  font-size: 12px;
+}
+
+.field input:disabled {
+  background: #e2e8f0;
+  color: #64748b;
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+}
+
+button {
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+button.primary {
+  background: #0f172a;
+  color: #ffffff;
+}
+
+button.ghost {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+button.danger {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+button.ghost.disabled,
+button.danger.disabled {
+  opacity: 0.6;
+  background: #d1d5db;
+  color: #6b7280;
+  cursor: not-allowed;
+}
+
+.table-controls {
+  margin-bottom: 16px;
+}
+
+.control-group label {
+  font-size: 12px;
+  color: #475569;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.control-group input,
+.control-group select {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  font-size: 12px;
+}
+
+.table-wrap {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  min-width: 1100px;
+}
+
+thead {
+  background: #f1f5f9;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid #e2e8f0;
+  white-space: nowrap;
+}
+
+tbody tr:hover {
+  background: #f8fafc;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.disabled-row {
+  opacity: 0.6;
+  background: #d1d5db;
+}
+
+.badge {
+  display: inline-flex;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.badge.active {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.badge.disabled {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.charts {
+  width: 100%;
+}
+
+.chart-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+  background: #f8fafc;
+  min-height: 330px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.chart-controls {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.chart-card canvas {
+  width: 100% !important;
+  max-height: 240px;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 12px;
+  font-size: 12px;
+}
+
+.form.editing {
+  background: #fef3c7;
+  border-radius: 12px;
+  box-shadow:
+    0 0 0 1px #facc15,
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -4px rgba(0, 0, 0, 0.1);
+}
+
+#accountForm {
+  margin-bottom: 24px;
+}
+
+.metric-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.metric-summary-item {
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #e2e8f0;
+  font-size: 11px;
+}
+
+.metric-summary-item.highlight {
+  background: #b7cceb; /* Lighter background */
+  color: #0f172a;    /* Darker text color */
+}
+
+/* Improved metric formatting */
+.metric-label {
+  font-weight: 500;
+  color: #475569;
+}
+
+.metric-separator {
+  color: #94a3b8;
+  margin: 0 4px;
+  font-weight: bold;
+}
+
+.metric-value {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.password-strength {
+  margin-top: 4px;
+  font-size: 11px;
+}
+
+.password-strength.bad {
+  color: #b91c1c;
+}
+
+.password-strength.weak {
+  color: #f97316;
+}
+
+.password-strength.fair {
+  color: #d97706;
+}
+
+.password-strength.good {
+  color: #15803d;
+}
+
+.password-strength.best {
+  color: #0f766e;
+}
+
+.charts {
+  width: 100%;
+  margin-bottom: 32px;
+}
+
+@media (max-width: 900px) {
+  .hero {
+    flex-direction: column;
+  }
+
+  .hero-stats {
+    width: 100%;
+  }
+
+  .chart-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
